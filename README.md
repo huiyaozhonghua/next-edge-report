@@ -12,7 +12,13 @@
 - ✅ 合规文件：隐私政策、英文版首页 `public/en.html`、上架物料 `listing-assets/`（Logo + 英文文案 + 截图清单）
 - ✅ 测试：`node test.js` 9 项全过
 - ✅ **Pi 主网 App 已注册**：`6b0672d68f5d0b3dd1cbb3d9`（Next Edge Report，slug `next-edge-report-7m5v`），Logo 已上传设置，`.pi-onboard.json` 已写入
-- ⏳ 待完成：公网 HTTPS 部署 → `frontend_url` → `verify_app_url_ownership` → Pi Browser 测试 → Ecosystem 上架提交审核
+- ✅ **已部署上线**：Cloudflare Pages → `https://next-edge-report.pages.dev`
+- ✅ **PiNet 地址已分配**：**`https://nextedgereportmv0511.pinet.com`**（Pi Browser 里打开这个）
+- ✅ **域名归属验证通过**（`validate_domain` ✅ / `add_pinet_subdomain` ✅）
+- ✅ **官方 checklist 全绿**：`register_app` / `configure_hosting` / `add_privacy_policy` /
+  `dev_doc_opened` / `deploy_app` / `validate_domain` / `add_pinet_subdomain`
+- ✅ **部署自检 15/15 通过**（`node verify_deployment.js https://next-edge-report.pages.dev`）
+- ⏳ 待完成：Pi Browser 真机登录测试 → 录 Demo 视频 → Ecosystem 上架提交审核
 - ⏸️ 已决策不做：Pi 支付（`create_wallet` / `process_transaction` 不适用，App 对参赛者全免费）
 
 ### Pi 开发者控制台链接
@@ -48,13 +54,26 @@ HTTPS_PROXY=http://127.0.0.1:17891 npm start
 - 未发送 `X-Frame-Options`；CSP `frame-ancestors` 仅允许 self / `*.pinet.com` / `*.minepi.com`。
 - 应用名**不能以 "Pi" 开头**（Pi 商标规则），故用 "Next Edge Report"，不与 Pi 官方标识混淆。
 
-## 剩余步骤（依赖公网 HTTPS 地址）
+## 剩余步骤
 
-1. 部署本项目到公网 HTTPS（`npm start` 需监听 `PORT` 且绑定 `0.0.0.0`）。
-2. `update_app(app_id, frontend_url=<https url>)` —— **只传 frontend_url**，不要传 development_url。
-3. `update_app(app_id, privacy_policy_url=<https url>/privacy.html)`。
-4. `verify_app_url_ownership(app_id)` → 若要求校验，部署 `/validation-key.txt`（内容为返回的 validation_key，纯文本）后重试。
-5. 成功后在 **Pi Browser** 打开 `pi_url` 测试 Pi 登录。
-6. 在电脑端打开 `listing_url`，补齐 subtitle / category / language，提交审核。
+1. **在 Pi Browser 真机打开** `https://nextedgereportmv0511.pinet.com` → 点「用 Pi 登录」→ 验证登录与进度同步。
+2. **录制 Demo 视频**（≤3 分钟，英文，公开发布）—— 逐字稿见 `listing-assets/DEMO_VIDEO_SCRIPT.md`，
+   录制清单见 `listing-assets/DEMO_RECORDING_CHECKLIST.md`。
+3. **提交上架**：打开 listing_url → 填 subtitle / category / language → 提交审核。
+
+### 部署相关命令
+
+```bash
+# 重新部署（改动后）
+export CLOUDFLARE_API_TOKEN=<cfat_ token>   # 或用 \$TEMP/cf_token.txt
+export CLOUDFLARE_ACCOUNT_ID=38e848a7a5031d103a244d52490c5645
+wrangler pages deploy public --project-name=next-edge-report --branch=main
+
+# 部署后自检
+node verify_deployment.js https://next-edge-report.pages.dev
+```
+
+> ⚠️ **账户级 token（`cfat_`）不能用 `/user/tokens/verify` 验证** —— 那是用户级 token 的端点，
+> 对账户 token 必然返回 "Invalid API Token"。用 `/accounts/{account_id}` 验证。
 
 > 注意：Pi 官方明确要求 API Key、助记词、恢复短语**只能由你在 Pi Developers / 钱包中自行生成并填入服务端密钥管理**，不得粘贴到对话里。本报告遵守该要求。
