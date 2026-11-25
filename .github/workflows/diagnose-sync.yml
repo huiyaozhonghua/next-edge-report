@@ -1,0 +1,91 @@
+name: Diagnose Progress Sync
+
+# 手动触发的诊断 workflow：检查 KV 里到底有没有数据。
+#
+# 用法：Actions → Diagnose Progress Sync → Run workflow
+#
+# 为什么需要它：
+#   用户在手机上看到「已登录 · 进度云同步」，但那只说明前端拿到了 Pi token。
+#   真正要确认的是：POST /api/progress 是否真的写进了 Cloudflare KV。
+#   用 KV API 直接查 —— 不需要用户再交出 token。
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check KV namespaces
+        id: kv
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -uo pipefail
+          echo "--- namespaces ---"
+          NS=$(curl -fsS -H "Authorization: Bearer ${CF_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces")
+          echo "$NS" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          for ns in (d.get('result') or []):
+              print(f\"  {ns.get('id')}  {ns.get('title')}\")
+          "
+          NS_ID=$(echo "$NS" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          for ns in (d.get('result') or []):
+              if ns.get('title')=='NEXT_EDGE_PROGRESS':
+                  print(ns.get('id')); break
+          ")
+          echo "namespace_id=$NS_ID" >> "$GITHUB_OUTPUT"
+          if [ -z "$NS_ID" ]; then
+            echo "❌ 找不到 NEXT_EDGE_PROGRESS"
+            exit 1
+          fi
+
+      - name: List KV keys
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NS_ID: ${{ steps.kv.outputs.namespace_id }}
+        run: |
+          set -uo pipefail
+          echo "--- keys in KV ---"
+          curl -fsS -H "Authorization: Bearer ${CF_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${NS_ID}/keys" \
+            | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          if not d.get('success'):
+              print('  ❌', d.get('errors')); sys.exit(1)
+          ks = d.get('result') or []
+          if not ks:
+              print('  （空 —— 还没有任何用户写过进度）')
+          for k in ks:
+              print(f\"  key={k.get('name')}  expires={k.get('expiration') or 'never'}\")
+          print(f'  共 {len(ks)} 个 key')
+          "
+
+      - name: Probe API directly
+        run: |
+          set -uo pipefail
+          echo "--- GET /api/progress 无 token（应 401）---"
+          curl -sS -o /dev/null -w "  HTTP %{http_code}\n" "https://next-edge-report.pages.dev/api/progress"
+          echo "--- GET /api/progress 带假 token（应 401，不是 500）---"
+          curl -sS -o /dev/null -w "  HTTP %{http_code}\n" \
+            -H "Authorization: Bearer fake_token_xyz" "https://next-edge-report.pages.dev/api/progress"
+          echo
+          echo "  说明：500 'KV not bound' = 绑定失败；401 = 绑定正常（鉴权拦住了）"
+
+      - name: Check Pi app state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          echo "--- Pi 侧 checklist（通过 MCP 不可用时跳过）---"
+          echo "  见 developers.minepi.com/devconsole/my-apps/6b0672d68f5d0b3dd1cbb3d9"
