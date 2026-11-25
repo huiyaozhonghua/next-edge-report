@@ -48,14 +48,16 @@ https://dash.cloudflare.com/profile/api-tokens
 | Workers Scripts | Edit | 不需要 |
 | Workers R2 Storage | Edit | 不需要 |
 
-**③ 再加一条 Account 级策略（点「添加策略」/ + 号）**
+**③ Account Settings？不需要**
 
-| 分类 | 权限项 | 级别 | 用途 |
-|---|---|---|---|
-| `Account` | **Account Settings** | **Read** | 读账户列表（wrangler 需要） |
-
-> 这一条在**另一个分类**下 —— 不在 Developer Platform 里，
-> 要往上翻找 **Account** 分类（或用搜索框输 "Account Settings"）。
+> ✅ **不用找它** —— 你在「账户 API 令牌」页面建的 token 本来就绑定在这个账户上。
+> 官方用法是显式给出账户 ID：
+> ```bash
+> export CLOUDFLARE_API_TOKEN="<token>"
+> export CLOUDFLARE_ACCOUNT_ID="38e848a7a5031d103a244d52490c5645"
+> ```
+> 给了 ACCOUNT_ID，就不再需要「读账户列表」的权限。
+> （脚本里已经设好了这个环境变量。）
 
 **④ 资源范围（Resources）**
 
