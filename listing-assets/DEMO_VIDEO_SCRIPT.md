@@ -32,6 +32,25 @@
 
 ---
 
+## 📌 关键决策：Demo 演示哪个页面
+
+项目里有两页：
+
+| 页面 | 内容 | 用在哪 |
+|---|---|---|
+| `index.html`（**中文，265 行**） | **完整应用** —— 四个标签页、匹配器、计划、打卡、报告库、Pi 登录 | ✅ **Demo 视频演示这个** |
+| `en.html`（英文，96 行） | 静态英文介绍页（hero + 数据 + 说明），**没有交互功能** | 供普通浏览器访问/分享 |
+
+> ⚠️ **别用 en.html 录 Demo** —— 它没有匹配器、计划、打卡，演不出功能。
+> 正确做法：**录中文版 index.html，配英文字幕 + 英文口播**。
+> 字幕承担「看不懂」的缺口，这是国际评审 Demo 的标准做法。
+>
+> 如果想彻底英文化界面，需要把 index.html 的 4 个标签页 + app.js 全部翻译 ——
+> 约 2–3 小时工作量。**不是必须**，因为 App 本身有 `en.html` 作为英文入口，
+> 且官方只要求「English name / description / preview images」，不要求界面全英文。
+
+---
+
 # ▸ 逐字稿正文
 
 > **图例**：`[画面]` = 镜头说明 ｜ `旁白：` = 说的话 ｜ `⏱` = 时间码
@@ -261,6 +280,37 @@
 | 1:55 | For solo devs deciding what to build |
 | 2:28 | Sign in with Pi. No email, no password. |
 | 2:45 | Pick the right topic. Then finish it. |
+
+### 🌐 中文界面 + 英文旁白：字幕桥接策略
+
+界面是中文、旁白是英文时，字幕要承担**双语桥接**。做法：
+
+1. **屏幕中文字幕照搬**（保持界面真实）
+2. **英文口播单独一层字幕**（在画面下方第二行，或替换中文行）
+3. **关键界面元素加英文标注**（后期加箭头 + 英文标签）
+
+举例（镜头 2）：
+
+```
+画面元素：  选题匹配  |  你的主力技术栈是？  |  全栈 / Web 开发
+后期标注：  ← Topic Matcher        ← Your main tech stack?      ← Full-stack / Web
+```
+
+**最少要标注 8 处**（覆盖所有核心功能点）：
+
+| 时间码 | 标注位置 | 英文标注 |
+|---|---|---|
+| 0:06 | 4 个标签页 | War Room / Topic Matcher / 46-Day Plan / Research Library |
+| 0:30 | 5 道题 | 5 questions about your stack, time, assets, goal, audience |
+| 0:45 | 结果区标题 | **Top Pick for You** + score |
+| 1:05 | 5 个阶段标题 | Stage 0–4: Eligibility → Topic → Compliance → Retention → Submit |
+| 1:32 | 打卡按钮 | **Daily Check-in** |
+| 1:40 | 报告库 | Research Library · cross-verified, confidence-rated |
+| 2:28 | 登录按钮 | **Sign in with Pi** |
+| 2:40 | 页脚 | Pi Sign-in · PiNet compatible |
+
+> 💡 **加标注比全英化界面省 2–3 小时，且效果一样好** —— 评审要的是「看懂功能」，不是「界面是英文的」。
+> 有余力的话再做英文化界面（翻译 index.html + app.js 的文案即可，逻辑不动）。
 
 ---
 
