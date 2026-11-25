@@ -1,0 +1,22 @@
+{
+  "name": "pi-next-report",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pi Next hackathon research report, onboarded as a Pi Network app with Pi Authentication",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "cloudflare": {
+    "pages_build_output_dir": "public",
+    "kv_namespaces": {
+      "PROGRESS_KV": "NEXT_EDGE_PROGRESS"
+    }
+  }
+}

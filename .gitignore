@@ -1,0 +1,29 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.pi-onboard.json.bak
+validation-key.txt
+*.log
+.DS_Store
+.data/
+
+# 含 Pi 开发者身份与后台链接的本地状态文件
+.pi-onboard.json
+
+# 一次性 OAuth 授权链接（含 code_challenge，有时效）
+pi-oauth-open.html
+
+# SoloHost 本地开发副本（镜像名指向本地 tag，不应入库）
+solohost-studio/docker-compose.local.yml
+solohost-studio/app/models/*.onnx
+solohost-studio/app/models/*.onnx.json
+
+# 嵌套仓库（Studio 单独推到自己的 GitHub 仓库）
+solohost-studio/
+
+# WorkBuddy 本地记忆与工作数据
+.workbuddy/
+
+# 本地 MCP 桥接脚本（依赖本机凭据槽位，与部署无关）
+listing-assets/pi-mcp.mjs

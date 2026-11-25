@@ -1,0 +1,28 @@
+# Cloudflare Pages 配置
+#
+# 部署方式（推荐 —— 从 GitHub 自动部署）：
+#   1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git
+#   2. 选仓库 huiyaozhonghua/next-edge-report
+#   3. Framework preset = None；Build command 留空；Build output directory = public
+#   4. 创建后到 Settings → Functions → Bindings → 添加 KV namespace
+#      Variable name: PROGRESS_KV   →  选/新建 NEXT_EDGE_PROGRESS
+#   5. 部署成功后拿到 https://<项目名>.pages.dev
+#
+# 命令行部署（备选）：
+#   npm i -g wrangler
+#   wrangler pages deploy public --project-name=next-edge-report
+#
+# 说明：
+#   · static 资源在 public/，无需构建步骤
+#   · functions/ 下的文件自动变成 /<路径> 路由
+#   · functions/api/progress.js 用 ESM（Cloudflare Pages Functions 始终按 ESM 解析，
+#     与根 package.json 的 CommonJS 无关）
+
+name = "next-edge-report"
+compatibility_date = "2026-11-01"
+pages_build_output_dir = "public"
+
+# KV 绑定（用 dashboard 部署时也可在界面里绑）
+# [[kv_namespaces]]
+# binding = "PROGRESS_KV"
+# id = "<你的 KV namespace id>"

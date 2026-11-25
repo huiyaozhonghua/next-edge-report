@@ -1,0 +1,14 @@
+# Cloudflare Pages 自定义响应头
+# 格式：[路径模式] 后跟缩进的 [头名]: [值]
+# 通配符用 /*（不是 /）
+
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://*.pinet.com https://*.minepi.com; connect-src 'self' https://socialchain.app https://api.minepi.com; script-src 'self' https://sdk.minepi.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob: data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  # 注意：不要设 X-Frame-Options —— Pi Browser 用 iframe 加载 App，
+  # SAMEORIGIN/DENY 会阻断 PiNet 子域名嵌入。由 CSP 的 frame-ancestors 单独控制。
+
+/validation-key.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: no-store
