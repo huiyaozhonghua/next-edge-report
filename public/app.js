@@ -39,7 +39,7 @@
         body: JSON.stringify({ uid: state.uid, state: state })
       }).catch(function () {});
     }
-    showToast("已保存");
+    showToast("Saved");
   }
   var toastTimer;
   function showToast(msg) {
@@ -201,7 +201,7 @@
       fit: { tech: { fullstack: 5, ai: 2, docker: 2, nocode: 0 }, time: { lt10: 1, "10_40": 2, "40_100": 4, gt100: 5 },
              goal: { judge: 4, community: 4, learn: 2 }, pi: { yes: 4, no: 1 } },
       bonus: { audience: 3, content: 1, agent: 0, docker_img: 0, node: 0 },
-      hours: "80h+", tags: ["往届冠军赛道", "拥挤", "不推荐"] }
+      hours: "80h+", tags: ["Past winner track", "Crowded", "Hard to retain"] }
   ];
 
   function renderQuestions() {
@@ -248,12 +248,12 @@
     if (missing.length) { showToast( + missing.length + " questions unanswered"); return null; }
     var ranked = TOPICS.map(function (t) { return { t: t, sc: score(t) }; }).sort(function (a, b) { return b.sc - a.sc; });
     state.topTopic = { name: ranked[0].t.name, score: ranked[0].sc };
-    var html = '<div class="result top"><div class="rank">头号推荐 · 最适合你</div><span class="score">' + ranked[0].sc + '<small>/100</small></span>' +
+    var html = '<div class="result top"><div class="rank">Top pick &middot; best fit for you</div><span class="score">' + ranked[0].sc + '<small>/100</small></span>' +
       '<h3>' + ranked[0].t.name + '</h3><p>' + ranked[0].t.desc + '</p>' +
-      '<div class="chips"><span class="chip">预计 ' + ranked[0].t.hours + '</span>' + ranked[0].t.tags.map(function (x) { return '<span class="chip">' + x + '</span>'; }).join("") + '</div></div>';
+      '<div class="chips"><span class="chip">Est. ' + ranked[0].t.hours + '</span>' + ranked[0].t.tags.map(function (x) { return '<span class="chip">' + x + '</span>'; }).join("") + '</div></div>';
     html += ranked.slice(1, 3).map(function (r, i) {
-      return '<div class="result"><div class="rank">备选 ' + (i + 2) + '</div><span class="score">' + r.sc + '<small>/100</small></span>' +
-        '<h3>' + r.t.name + '</h3><p>' + r.t.desc + '</p><div class="chips"><span class="chip">预计 ' + r.t.hours + '</span></div></div>';
+      return '<div class="result"><div class="rank">Alternative ' + (i + 2) + '</div><span class="score">' + r.sc + '<small>/100</small></span>' +
+        '<h3>' + r.t.name + '</h3><p>' + r.t.desc + '</p><div class="chips"><span class="chip">Est. ' + r.t.hours + '</span></div></div>';
     }).join("");
     $("matchResults").innerHTML = html;
     save(); renderDash();
@@ -295,7 +295,7 @@
           .then(function (r) { return r.json(); }).then(function (d) {
             if (d && d.state) { state = d.state; save(); renderPlan(); renderDash(); renderQuestions(); }
           }).catch(function () {});
-      }).catch(function () { $("loginBtn").disabled = false; showToast("登录取消或失败"); });
+      }).catch(function () { $("loginBtn").disabled = false; showToast("Sign-in cancelled or failed"); });
     });
     $("logoutBtn").addEventListener("click", function () {
       state.uid = null; accessToken = null; save();
