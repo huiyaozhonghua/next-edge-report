@@ -52,6 +52,13 @@ function run(name, method, url, bodyObj, check, headers) {
     const csp = r.headers["Content-Security-Policy"] || "";
     if (!csp.includes("frame-ancestors")) throw new Error("missing frame-ancestors CSP");
     if (r.headers["X-Frame-Options"]) throw new Error("X-Frame-Options must not be set");
+    // CSP 必须放开 Pi Browser iframe 嵌入所需的方向，且不能掐死内联样式/SVG/媒体
+    for (const dir of ["style-src", "img-src", "media-src", "font-src"]) {
+      if (!csp.includes(dir)) throw new Error("CSP missing " + dir);
+    }
+    if (!csp.includes("frame-ancestors 'self' https://*.pinet.com")) {
+      throw new Error("CSP frame-ancestors must allow PiNet subdomain");
+    }
   });
   await run("GET /app.js -> matcher + persistence", "GET", "/app.js", null, (r) => {
     if (r.statusCode !== 200) throw new Error("status " + r.statusCode);
@@ -75,6 +82,20 @@ function run(name, method, url, bodyObj, check, headers) {
   await run("GET /privacy.html", "GET", "/privacy.html", null, (r) => {
     if (r.statusCode !== 200) throw new Error("status " + r.statusCode);
     if (!r.body.toString().toLowerCase().includes("privacy policy")) throw new Error("no privacy policy");
+  });
+  await run("GET /_headers -> Pages config", "GET", "/_headers", null, (r) => {
+    if (r.statusCode !== 200) throw new Error("status " + r.statusCode);
+    const b = r.body.toString();
+    if (!b.includes("/*")) throw new Error("must use /* wildcard, not /");
+    // 生效的 header 行里不能有 X-Frame-Options（会阻断 PiNet iframe 嵌入）
+    const active = b.split("\n").filter((l) => !/^\s*#/.test(l) && /^\s+[A-Za-z-]+:/.test(l));
+    for (const line of active) {
+      if (/^X-Frame-Options:/i.test(line.trim())) {
+        throw new Error("X-Frame-Options must not be set (blocks PiNet iframe embed)");
+      }
+    }
+    if (!b.includes("frame-ancestors")) throw new Error("_headers missing frame-ancestors");
+    if (!b.includes("/validation-key.txt")) throw new Error("_headers missing validation-key.txt rule");
   });
   await run("POST /api/auth/verify rejects empty token", "POST", "/api/auth/verify", {}, (r) => {
     if (r.statusCode !== 400) throw new Error("status " + r.statusCode);
