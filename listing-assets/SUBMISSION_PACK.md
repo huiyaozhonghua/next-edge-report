@@ -35,29 +35,33 @@ Next Edge Report
 
 ✅ 不以 "pi" 开头 ✅ 不含 Pi 官方标识 ✅
 
-### 2. Subtitle（副标题，一句话）
+### 2. Subtitle（副标题）—— ✅ 已设置
 
 ```
-The Pi Next hackathon, decoded into one clear action plan
+Your Pi Next war room
 ```
 
-**备选**：
-- `Pick the right topic, then finish it — a war room for Pi Next`
-- `Your Pi Next war room: topic matcher, 46-day plan, daily streaks`
+> ⚠️ **硬限制：≤ 30 字符**。我最初写的 "The Pi Next hackathon, decoded into one clear action plan"
+> 是 57 字符，被 Pi 侧拒绝（`description_short_too_long`），已缩短。
 
-> 💡 副标题是评审在目录里第一眼看到的。**第一个版本强调"结果"（one clear action plan），
-> 第二个版本更强调"动作"。我推荐第一个** —— 简洁且说明价值。
+**备选**（都在 30 字符内）：
+- `Topic matcher + 46-day plan`（28）
+- `Pick the right topic, then ship`（32 ❌ 超了）
+- `Decoded into one action plan`（28）
 
-### 3. Category
+### 3. Category —— ✅ 已设置
 
-选最接近的：
-- **Tools / Productivity** ← 推荐
-- Utilities
-- Education
+```
+Productivity
+```
 
-> ⚠️ Pi 目录的具体分类在下拉框里，先看有没有 "Tools"；有就选它。
+> Pi 官方枚举（来自 `update_app` 的 schema，16 个）：
+> `Art` `Career` `Commerce` `Education` `Entertainment` `Finance` `Games` `Health`
+> `Lifestyle` `Music` `NFT` **`Productivity`** `Social` `Sports` `Travel` `Utilities`
+>
+> 我们的 App 是工具型（匹配器 + 计划 + 打卡）→ `Productivity` 最贴切。
 
-### 4. Language
+### 4. Language —— ✅ 已设置
 
 ```
 English
@@ -105,15 +109,38 @@ https://next-edge-report.pages.dev/privacy.html
 
 ✅ 已设置到 Pi 侧（`add_privacy_policy: true`），实测 200。
 
+### 7b. Terms of Service URL —— ✅ 已设置
+
+```
+https://next-edge-report.pages.dev/terms.html
+```
+
+> ⚠️ **这个字段之前是空的！** 从 `update_app` 的 schema 发现
+> `terms_of_service_url` 是 **"Required for a Mainnet listing"**。
+> 已新建 `public/terms.html`（含合规免责：不构成投资建议、与 Pi 官方无隶属关系等）并部署上线。
+
+---
+
 ### 8. Preview images（5 张，按此顺序上传）
 
-| 顺序 | 文件 | 展示内容 |
-|---|---|---|
-| **1（封面）** | `listing-assets/screenshots/05-matcher-result.png` | **选题匹配结果态** —— 69/67/63 三档差异化评分 + 5 题选项高亮。最能体现"个性化"，做封面 |
-| 2 | `01-dashboard.png` | 作战台全景：42 天倒计时 + 20万 + 75% + 进度环 + 打卡卡 |
-| 3 | `02-topic-matcher.png` | 选题匹配器表单（5 题全貌） |
-| 4 | `03-46day-plan.png` | 46 天计划 5 阶段 15 项任务 |
-| 5 | `04-report-library-expanded.png` | 调研报告库全展开：奖金表、置信度徽章、期望值测算、红线 |
+| 顺序 | 文件 | 公网 URL（可直接填） | 展示内容 |
+|---|---|---|---|
+| **1（封面）** | `05-matcher-result.png` | `https://next-edge-report.pages.dev/previews/05-matcher-result.png` | **选题匹配结果态** —— 69/67/63 三档差异化评分 + 5 题选项高亮。最能体现"个性化"，做封面 |
+| 2 | `01-dashboard.png` | `https://next-edge-report.pages.dev/previews/01-dashboard.png` | 作战台全景：42 天倒计时 + 20万 + 75% + 进度环 + 打卡卡 |
+| 3 | `02-topic-matcher.png` | `https://next-edge-report.pages.dev/previews/02-topic-matcher.png` | 选题匹配器表单（5 题全貌） |
+| 4 | `03-46day-plan.png` | `https://next-edge-report.pages.dev/previews/03-46day-plan.png` | 46 天计划 5 阶段 15 项任务 |
+| 5 | `04-report-library-expanded.png` | `https://next-edge-report.pages.dev/previews/04-report-library-expanded.png` | 调研报告库全展开：奖金表、置信度徽章、期望值测算、红线 |
+
+**尺寸**：全部 1440px 宽（手机竖版布局），Pi 目录正是这个形态。
+**状态**：5 张都已部署上线，实测 200 ✅
+
+> 📌 **官方校验逻辑**（从开发者门户 JS 提取）：
+> `"missing_remote_previews": "Add 3 screenshots first."`
+> → **至少 3 张**。我们有 5 张。
+>
+> ⚠️ **上传位置**：MCP 工具里**没有预览图上传接口**（只有 logo 的），
+> 预览图必须去 **Dashboard → listing 页面手动上传**（拖拽文件，或填上面的公网 URL）。
+> 本地文件在 `listing-assets/screenshots/`，公网副本在 `public/previews/`。
 
 > **封面选 05 的理由**：官方评审标准第一条是
 > "Pi utility and alignment with overall community and ecosystem needs"，
@@ -155,6 +182,35 @@ Organizer account."*）
 
 ⬜ 不适用 —— 我们 declined payments，App 对参赛者全免费。
 （官方允许；`create_wallet` / `process_transaction` 在 Pi 侧显示"不适用"是正常的）
+
+---
+
+## 🔍 上架表单的 5 项硬校验（从官方 JS 提取）
+
+官方开发者门户的前端会实时校验这 5 项，每项都有明确报错文案：
+
+| 校验码 | 官方报错文案 | 我们的状态 |
+|---|---|---|
+| `not_deployed` | `"App not deployed"` | ✅ 已部署 |
+| `domain_not_verified` | `"Domain not verified"` | ✅ 已通过验证 |
+| `listing_not_submitted` | `"Mainnet listing not submitted for review"` | ⬜ **你去 Dashboard 提交审核** |
+| `video_missing` | `"Demo video missing"` | ⬜ **你录视频** |
+| `moderated` | `"App is blocked or delisted"` | ✅ 无 |
+| `missing_languages` | `"Choose a language on this listing page first."` | ✅ 已设 English |
+| `missing_remote_previews` | `"Add 3 screenshots first."` | ⬜ **你上传（5 张已备好 URL）** |
+| `missing_description_short` | `"Save the listing first so it has a subtitle."` | ✅ 已设 "Your Pi Next war room" |
+| `frontend_url_not_validated` | `"Deploy the app at a verified public URL first."` | ✅ 已验证 |
+| `pi_kyc_not_applied` | `"Apply for Pi KYC in the Pi app first."` | ✅ **已 KYC**（你截图确认） |
+
+**视频链接的合法性判定**（官方源码）：
+```js
+protocol === "https:" && !username && !password && hostname.includes(".")
+```
+→ **必须 https、不能带账号密码、域名要含点**。YouTube 链接 ✅
+
+**官方列出的视频发布渠道**：
+`X` / `YouTube` / `Ecosystem Summit` / `Facebook` / `Instagram` / `Telegram` /
+`Mine Pi app` / `Email from Pi` / `Friend or teammate`
 
 ---
 
