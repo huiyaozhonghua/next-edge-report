@@ -36,12 +36,14 @@ echo "════════════════════════�
 echo
 
 # 1) token 有效性
-V=$(curl -s -m 25 -H "Authorization: Bearer $TOKEN" \
-  "https://api.cloudflare.com/client/v4/user/tokens/verify")
-if echo "$V" | grep -q '"status":"active"'; then
-  echo "✅ 1. token 有效 (status: active)"
+# 注意：账户级 token（cfat_）不能用 /user/tokens/verify —— 那个端点只认用户级
+#       token（cfut_），对 cfat_ 会返回 "Invalid API Token"。账户 token 用账户端点验证。
+V=$(curl -s -m 25 -H "Authorization: Bearer $TOKEN" -H "User-Agent: check" \
+  "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID")
+if echo "$V" | grep -q '"success":true'; then
+  echo "✅ 1. token 有效（账户级）"
 else
-  echo "❌ 1. token 无效"
+  echo "❌ 1. token 无效或无权访问账户"
   echo "$V" | python -c "
 import sys,json
 try:

@@ -26,3 +26,7 @@ pages_build_output_dir = "public"
 # [[kv_namespaces]]
 # binding = "PROGRESS_KV"
 # id = "<你的 KV namespace id>"
+
+[[kv_namespaces]]
+binding = "PROGRESS_KV"
+id = "433142a7633a4ce98e060a589ccbeff7"

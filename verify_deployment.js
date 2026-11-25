@@ -27,11 +27,26 @@ const bad = (m) => { console.log(`  [FAIL] ${m}`); fail++; };
 function req(urlPath) {
   return new Promise((resolve) => {
     const u = new URL(urlPath, base);
-    https.get(u, { headers: { "User-Agent": "next-edge-verify" } }, (res) => {
-      let body = "";
-      res.on("data", (c) => (body += c));
-      res.on("end", () => resolve({ status: res.statusCode, headers: res.headers, body }));
-    }).on("error", (e) => resolve({ status: 0, headers: {}, body: "", error: e.message }));
+    let hops = 0;
+    const go = (target) => {
+      hops += 1;
+      if (hops > 5) {
+        return resolve({ status: 0, headers: {}, body: "", error: "too many redirects" });
+      }
+      https.get(target, { headers: { "User-Agent": "next-edge-verify" } }, (res) => {
+        // Cloudflare Pages 会把 /privacy.html 规范化成 /privacy（308），
+        // 而 /privacy 又重定向回 /privacy/ —— 必须限制跳数，否则死循环。
+        if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location && hops < 5) {
+          res.resume();
+          const next = new URL(res.headers.location, target).href;
+          return go(next);
+        }
+        let body = "";
+        res.on("data", (c) => (body += c));
+        res.on("end", () => resolve({ status: res.statusCode, headers: res.headers, body }));
+      }).on("error", (e) => resolve({ status: 0, headers: {}, body: "", error: e.message }));
+    };
+    go(u.href);
   });
 }
 

@@ -52,12 +52,26 @@ echo
 
 # ---------- 1. 验证 token ----------
 echo "▸ 1/6 验证 token"
-VERIFY=$(curl -s -m 25 -H "Authorization: Bearer $TOKEN" \
-  "https://api.cloudflare.com/client/v4/user/tokens/verify")
-if echo "$VERIFY" | grep -q '"status":"active"'; then
-  echo "  ✅ token 有效"
+# 注意：账户级 token（cfat_）不能用 /user/tokens/verify 验证 ——
+#       那个端点只认用户级 token（cfut_），对 cfat_ 会返回 "Invalid API Token"。
+#       账户 token 用账户端点验证。
+ACC_ID="38e848a7a5031d103a244d52490c5645"
+VERIFY=$(curl -s -m 25 -H "Authorization: Bearer $TOKEN" -H "User-Agent: deploy" \
+  "https://api.cloudflare.com/client/v4/accounts/$ACC_ID")
+if echo "$VERIFY" | grep -q '"success":true'; then
+  ACC_NAME=$(echo "$VERIFY" | python -c "
+import sys,json
+try: print((json.load(sys.stdin).get('result') or {}).get('name',''))
+except Exception: print('')" 2>/dev/null)
+  echo "  ✅ token 有效（账户：${ACC_NAME:-未知}）"
 else
-  echo "  ❌ token 无效: $(echo "$VERIFY" | head -c 200)"
+  echo "  ❌ token 无效或无权访问账户:"
+  echo "$VERIFY" | python -c "
+import sys,json
+try:
+    d=json.load(sys.stdin)
+    for e in d.get('errors',[]): print('     ', e.get('code'), e.get('message'))
+except Exception: print('     ', sys.stdin.read()[:200])" 2>/dev/null
   exit 1
 fi
 
