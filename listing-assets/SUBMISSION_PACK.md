@@ -120,6 +120,15 @@ https://next-edge-report.pages.dev/privacy.html
 > 而 **75% 的奖金看参与度和留存** —— 一张"同一套题目、不同的人得到不同答案"的截图，
 > 比任何文字都能说明"这是工具不是报告"。
 
+### 📌 上架审核不必等通过
+
+官方提交流程原文：*"For a Mainnet app, submit its listing for review — **it does not have to be
+approved yet**."*
+
+→ **提交上架审核后就能参赛**，不用等 Pi 审核通过。
+→ 另外：*"You can replace the link or withdraw at any time until the deadline."*
+→ **视频链接在截止前可以随时替换** —— 先交占位、后面补真视频也是允许的。
+
 ### 9. Logo
 
 ✅ 已上传并设置（`app_logo_url` 已有值）
@@ -133,8 +142,14 @@ https://next-edge-report.pages.dev/privacy.html
 ### 11. Team members
 
 ⬜ 列出**全部队员**，且**每人各自注册**了 Pi Next
-（官方原文：*"All team members must register in order to participate"*）
-提交由**一名**队员完成。
+（官方规则 9 原文：*"Each team member must register individually for the Pi Next hackathon
+before joining a team. Each team member must be a single individual with a single, active
+Organizer account."*）
+
+> 📌 **团队人数无上限**（规则 10：*"the Organizer has determined that there is no limit to the
+> team size"*）。
+> 但**每个 App 只由一名队员提交**（官方：*"Only one team member should submit each app"*）。
+> 单人参赛无需协调。
 
 ### 12. Demo of a real transaction
 

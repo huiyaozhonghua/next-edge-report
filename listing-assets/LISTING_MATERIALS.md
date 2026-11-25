@@ -14,7 +14,7 @@ All fields avoid Pi trademark issues (no name/domain starting with "pi", no Pi l
 | 项 | 官方要求 | 我们的状态 |
 |---|---|---|
 | App 数量 | 每队**最多 3 个**，必须是主网 Pi App 或 SoloHost App | ✅ 已建 1 个（Next Edge Report） |
-| 提交人 | 一个 App 只由**一名队员**提交 | — 单人参赛，无需协调 |
+| 提交人 | 一个 App 只由**一名队员**提交（官方规则 10：团队人数**无上限**） | — 单人参赛，无需协调 |
 | 报名 | 在 Developer Web Console 的 Hackathon 标签页注册；**所有队员各自注册** | ⬜ 待办 |
 | 规则同意 | 报名须同意《Pi Next Hackathon 2026 Rules》22 条 | ⬜ 报名时勾选 |
 | 年龄 | 报名时**年满 18 岁** | — |
