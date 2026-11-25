@@ -23,58 +23,55 @@ https://dash.cloudflare.com/profile/api-tokens
 
 不要选模板，直接 **Create Custom Token**（模板的权限组合不对）。
 
-### 3. 填权限（按你截图里的实际界面）
+### 3. 填权限（按你这张截图对照）
 
-> 你现在在「**账户 API 令牌 → 创建令牌**」页面，令牌名称已填 `next-edge-deploy` ✅
-> 往下就是「**权限策略**」区域。操作如下：
+> 你的界面现状（已确认 ✅）：
+> - 令牌名称：`next-edge-deploy` ✅
+> - 其他已选权限：**Pages Write** ✅ / **Workers KV Storage Write** ✅
+> - ⚠️ 编辑策略里第一个下拉框还是「**指定域名**」—— **必须改**
 
-**① 改第一个下拉框**
+**① 把资源范围从「指定域名」改成「指定账户」**
 
-它现在显示「**指定域名**」→ 点开改成「**指定账户**」。
+点「编辑策略」里那两个并排的下拉框中**左边那个**（现在显示"指定域名"）：
 
-> ⚠️ 这一步很关键：**只选 Zone 权限拿不到 Pages**（Pages 是账户级资源）。
-> 界面上还会提示「Selectable permission groups are limited to actions based on your
-> account membership roles」—— 意思是可选项取决于你在该账户的角色（你是 Owner，全都有）。
+```
+[ 指定域名 ▾ ]  [ 选择域名... ▾ ]
+        ↓ 点这里
+[ 指定账户 ▾ ]  [ 选择账户... ▾ ]
+```
 
-**② 在权限组里勾选**
+**② 右边那个下拉框选你的账户**
 
-展开「**Developer Platform (0/4)**」→ 里面就能看到 **Pages**。
-勾选后右侧会出现第二个下拉框选级别：
+选 `Default account`（就是左边 Account settings 下面那个）。
 
-| 权限项（Developer Platform 组内） | 级别 | 必需？ |
-|---|---|---|
-| **Pages** | **Edit** | ✅ **必需** —— 建项目、触发部署 |
-| **Workers KV Storage** | **Edit** | 可选 —— 进度同步用，不给也能部署 |
-| Workers Scripts | Edit | 不需要 |
-| Workers R2 Storage | Edit | 不需要 |
+> 💡 **为什么必须改**：Pages 是**账户级**资源，不是域名级。
+> 你的账户下**一个域名都没有**（Pi 生态参赛不需要域名）。
+> 如果停在「指定域名」，token 会因为找不到可授权的域名而无法访问 Pages 项目。
+>
+> 改完之后，页面会变成：
+> ```
+> [ 指定账户 ▾ ]  [ Default account ▾ ]
+> ```
+> 并且下面的「Pages Write」「Workers KV Storage Write」
+> 会**保持勾选状态**（它们和资源范围是独立的）。
 
-**③ Account Settings？不需要**
+**③ 不需要 Account Settings 权限**
 
-> ✅ **不用找它** —— 你在「账户 API 令牌」页面建的 token 本来就绑定在这个账户上。
+> ✅ **不用找它** —— 你在「账户 API 令牌」页面建的 token 本就绑定在这个账户上。
 > 官方用法是显式给出账户 ID：
 > ```bash
 > export CLOUDFLARE_API_TOKEN="<token>"
 > export CLOUDFLARE_ACCOUNT_ID="38e848a7a5031d103a244d52490c5645"
 > ```
-> 给了 ACCOUNT_ID，就不再需要「读账户列表」的权限。
-> （脚本里已经设好了这个环境变量。）
+> 给了 ACCOUNT_ID 就不需要「读账户列表」的权限。（脚本里已设好。）
 
-**④ 资源范围（Resources）**
+### 4. 点底部「继续以摘要形式」→「创建令牌」
 
-每一行右侧的资源选择器，都选：
+页面会先跳到摘要页，确认一下显示的是：
 
-| 下拉框 | 选什么 |
-|---|---|
-| 资源类型 | `Account` |
-| 账户 | 你的账户（Default account / ID `38e848a7a5031d103a244d52490c5645`） |
-
-> 💡 **两个 "Account" 别搞混**：
-> - Permissions 第 1 列的 `Account` = 权限是账户级
-> - Resources 里的 `Account` = token 能作用于哪个账户
->
-> **别选 Zone** —— 我们没有域名，Pages 项目在账户级。
-
-### 4. 点 "Continue to summary" → 核对 → 点 "Create Token"
+- Token name: `next-edge-deploy`
+- 权限：`Pages:Write` + `Workers KV Storage:Write`
+- 资源：`Account / Default account`
 
 ### 5. 复制 token
 
