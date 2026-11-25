@@ -23,50 +23,64 @@ https://dash.cloudflare.com/profile/api-tokens
 
 不要选模板，直接 **Create Custom Token**（模板的权限组合不对）。
 
-### 3. 填权限（照着三个下拉框点）
+### 3. 填权限（按你截图里的实际界面）
 
-**Token name**：`next-edge-deploy`
+> 你现在在「**账户 API 令牌 → 创建令牌**」页面，令牌名称已填 `next-edge-deploy` ✅
+> 往下就是「**权限策略**」区域。操作如下：
 
-**Expiration**：留空 / 不设置自动过期
-**Client IP address filtering**：留空
+**① 改第一个下拉框**
 
-**Permissions** 区域，点 **"Add permissions"**（或表格下方的 + 号）加两行：
+它现在显示「**指定域名**」→ 点开改成「**指定账户**」。
 
-**第 1 行** —— 三个下拉框依次选：
+> ⚠️ 这一步很关键：**只选 Zone 权限拿不到 Pages**（Pages 是账户级资源）。
+> 界面上还会提示「Selectable permission groups are limited to actions based on your
+> account membership roles」—— 意思是可选项取决于你在该账户的角色（你是 Owner，全都有）。
 
-| 第1个下拉框 | 第2个下拉框 | 第3个下拉框 |
+**② 在权限组里勾选**
+
+展开「**Developer Platform (0/4)**」→ 里面就能看到 **Pages**。
+勾选后右侧会出现第二个下拉框选级别：
+
+| 权限项（Developer Platform 组内） | 级别 | 必需？ |
 |---|---|---|
-| `Account` | `Cloudflare Pages` | `Edit` |
+| **Pages** | **Edit** | ✅ **必需** —— 建项目、触发部署 |
+| **Workers KV Storage** | **Edit** | 可选 —— 进度同步用，不给也能部署 |
+| Workers Scripts | Edit | 不需要 |
+| Workers R2 Storage | Edit | 不需要 |
 
-**第 2 行**（可选，为了进度同步）：
+**③ 再加一条 Account 级策略（点「添加策略」/ + 号）**
 
-| 第1个下拉框 | 第2个下拉框 | 第3个下拉框 |
-|---|---|---|
-| `Account` | `Workers KV Storage` | `Edit` |
+| 分类 | 权限项 | 级别 | 用途 |
+|---|---|---|---|
+| `Account` | **Account Settings** | **Read** | 读账户列表（wrangler 需要） |
 
-> ⚠️ **第 2 行可以不加** —— 进度同步是锦上添花，跳过也能部署成功，
-> App 核心功能（选题匹配/46天计划/打卡）都在 localStorage。
-> 加上更完整，但多一步操作。
+> 这一条在**另一个分类**下 —— 不在 Developer Platform 里，
+> 要往上翻找 **Account** 分类（或用搜索框输 "Account Settings"）。
 
-**Resources** 列（每一行右侧）：
+**④ 资源范围（Resources）**
+
+每一行右侧的资源选择器，都选：
 
 | 下拉框 | 选什么 |
 |---|---|
 | 资源类型 | `Account` |
-| 账户 | 选你的账户（ID 是 `38e848a7a5031d103a244d52490c5645`） |
+| 账户 | 你的账户（Default account / ID `38e848a7a5031d103a244d52490c5645`） |
 
-> 💡 **注意区分两个 "Account"**：
-> - Permissions 第1列的 `Account` = 权限是账户级
-> - Resources 里的 `Account` = 这个 token 能作用于哪个账户
+> 💡 **两个 "Account" 别搞混**：
+> - Permissions 第 1 列的 `Account` = 权限是账户级
+> - Resources 里的 `Account` = token 能作用于哪个账户
 >
-> **这里不要选 `Zone`**（Zone 级要指定具体域名，我们没有域名）。
+> **别选 Zone** —— 我们没有域名，Pages 项目在账户级。
 
 ### 4. 点 "Continue to summary" → 核对 → 点 "Create Token"
 
 ### 5. 复制 token
 
-页面上会显示一串长字符串。**新版是 `cfut_` 开头的可扫描格式**，
-也可能是老的 40 位 hex —— 两种 wrangler 都认。
+你在「**账户 API 令牌**」页面创建的 token 是 **`cfat_` 开头**（账户 token）。
+（用户级 token 才是 `cfut_` 开头 —— 两者 wrangler 都认，不用纠结。）
+
+> ✅ **账户 token 支持 Pages**（官方兼容性矩阵：Pages ✅），
+> 而且它不绑定个人账号，做 CI/CD 更稳 —— 正合我们这个场景。
 
 ⚠️ **只显示这一次**，离开页面就看不到了。
 
