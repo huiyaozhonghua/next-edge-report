@@ -22,6 +22,8 @@ TOKEN="${1:-}"
 if [ -z "$TOKEN" ] && [ -f "$TEMP/cf_token.txt" ]; then
   TOKEN=$(cat "$TEMP/cf_token.txt" 2>/dev/null)
 fi
+# 显式指定账户 ID —— 账户 token 无需 "Account Settings:Read" 权限
+export CLOUDFLARE_ACCOUNT_ID="38e848a7a5031d103a244d52490c5645"
 if [ -z "$TOKEN" ]; then
   echo "用法: bash check_cf_token.sh <token>"
   echo "  或先把 token 写入 \$TEMP\\cf_token.txt"
@@ -50,27 +52,26 @@ except Exception: print('     ', sys.stdin.read()[:200])
   exit 1
 fi
 
-# 2) 账户列表
+# 2) 账户 —— 账户 token 已绑定账户，直接用已知 ID（不需要 Account Settings:Read）
+ACC_ID="$CLOUDFLARE_ACCOUNT_ID"
 ACC=$(curl -s -m 25 -H "Authorization: Bearer $TOKEN" \
-  "https://api.cloudflare.com/client/v4/accounts")
-ACC_ID=$(echo "$ACC" | python -c "
+  "https://api.cloudflare.com/client/v4/accounts/$ACC_ID")
+if echo "$ACC" | grep -q '"success":true'; then
+  ACC_NAME=$(echo "$ACC" | python -c "
+import sys,json
+try: print((json.load(sys.stdin).get('result') or {}).get('name',''))
+except Exception: print('')" 2>/dev/null)
+  echo "✅ 2. 账户可访问: ${ACC_NAME:-（名称未返回）}"
+  echo "      id: $ACC_ID"
+else
+  echo "⚠️ 2. 访问账户失败 —— token 的资源范围可能没选到这个账户"
+  echo "$ACC" | python -c "
 import sys,json
 try:
     d=json.load(sys.stdin)
-    rs=d.get('result') or []
-    if rs:
-        print(rs[0].get('id',''))
-        print('NAME:'+rs[0].get('name',''), file=sys.stderr)
-except Exception: pass
-" 2>/tmp/accname.txt)
-ACC_NAME=$(cat /tmp/accname.txt 2>/dev/null | sed 's/^NAME://')
-if [ -n "$ACC_ID" ]; then
-  echo "✅ 2. 账户可读: $ACC_NAME"
-  echo "      id: $ACC_ID"
-else
-  echo "⚠️ 2. 读不到账户列表 —— token 可能缺 Account 权限"
-  ACC_ID="38e848a7a5031d103a244d52490c5645"
-  echo "      用已知账户 id 继续: $ACC_ID"
+    for e in d.get('errors',[]): print('     ', e.get('code'), e.get('message'))
+except Exception: pass" 2>/dev/null
+  exit 1
 fi
 
 # 3) Pages 权限

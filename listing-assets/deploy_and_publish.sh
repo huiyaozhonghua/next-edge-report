@@ -42,6 +42,8 @@ if [ -z "$TOKEN" ]; then
   exit 1
 fi
 export CLOUDFLARE_API_TOKEN="$TOKEN"
+# 显式指定账户 ID —— 账户 token 不需要 Account Settings:Read 权限
+export CLOUDFLARE_ACCOUNT_ID="38e848a7a5031d103a244d52490c5645"
 
 echo "═══════════════════════════════════════════"
 echo " 部署 Next Edge Report → Cloudflare Pages"

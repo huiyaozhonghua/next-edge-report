@@ -13,6 +13,9 @@ set -uo pipefail
 PROJ="${1:-next-edge-report}"
 cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 2
 
+# 显式指定账户 ID —— 账户 token 无需 "Account Settings:Read" 权限
+export CLOUDFLARE_ACCOUNT_ID="38e848a7a5031d103a244d52490c5645"
+
 export HTTP_PROXY=http://127.0.0.1:17891
 export HTTPS_PROXY=http://127.0.0.1:17891
 export http_proxy=http://127.0.0.1:17891
