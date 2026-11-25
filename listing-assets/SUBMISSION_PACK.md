@@ -125,8 +125,8 @@ https://next-edge-report.pages.dev/terms.html
 
 | 顺序 | 文件 | 公网 URL（可直接填） | 展示内容 |
 |---|---|---|---|
-| **1（封面）** | `05-matcher-result.png` | `https://next-edge-report.pages.dev/previews/05-matcher-result.png` | **选题匹配结果态** —— 69/67/63 三档差异化评分 + 5 题选项高亮。最能体现"个性化"，做封面 |
-| 2 | `01-dashboard.png` | `https://next-edge-report.pages.dev/previews/01-dashboard.png` | 作战台全景：42 天倒计时 + 20万 + 75% + 进度环 + 打卡卡 |
+| **1（封面）** | `05-matcher-result.png` | `https://next-edge-report.pages.dev/previews/05-matcher-result.png` | **选题匹配结果态** —— 69/67/63 三档差异化评分（全英文界面） + 5 题选项高亮。最能体现"个性化"，做封面 |
+| 2 | `01-dashboard.png` | `https://next-edge-report.pages.dev/previews/01-dashboard.png` | 作战台全景：42 days left + $200K + 75% + 进度环 + 打卡卡 |
 | 3 | `02-topic-matcher.png` | `https://next-edge-report.pages.dev/previews/02-topic-matcher.png` | 选题匹配器表单（5 题全貌） |
 | 4 | `03-46day-plan.png` | `https://next-edge-report.pages.dev/previews/03-46day-plan.png` | 46 天计划 5 阶段 15 项任务 |
 | 5 | `04-report-library-expanded.png` | `https://next-edge-report.pages.dev/previews/04-report-library-expanded.png` | 调研报告库全展开：奖金表、置信度徽章、期望值测算、红线 |
@@ -161,7 +161,28 @@ approved yet**."*
 ✅ 已上传并设置（`app_logo_url` 已有值）
 文件：`listing-assets/logo-1024.png`（1024×1024 PNG，24KB）
 
-### 10. Demo video
+### 10. Demo video —— ✅ 已生成
+
+**成片已备好**：`listing-assets/demo/next-edge-demo-v1.mp4`
+（1920×1080 / 105 秒 / 全英文界面 + 英文配音 + 英文硬字幕 / -14.4 LUFS）
+
+| 项 | 状态 |
+|---|---|
+| 时长 105 秒 ≤ 3 分钟 | ✅ |
+| 英文旁白 + 英文界面 | ✅ |
+| 5 件事全覆盖 | ✅ |
+| 公开可访问 | ⬜ **需你上传 YouTube 并设为公开** |
+
+**做法**：不是录屏 PPT，而是用 Chrome headless + CDP 真实操作线上 App，
+自动生成关键帧 → FFmpeg 合成 → TTS 配音 + 字幕。
+**改代码后可一键重出**，画面永远和线上版本一致。
+
+**上传要求**（官方）：发布到 YouTube 等公开平台，**设为公开**（非"仅受邀者"），
+链接填进提交表单。无痕窗口要能打开。
+
+**可选改进**：用手机在 Pi Browser 里真机录 10 秒登录成功画面，替换第 10 段（Pi 登录段）。
+
+
 
 ⬜ **待录** —— 逐字稿 `DEMO_VIDEO_SCRIPT.md`（2:52，英文，官方 5 项全覆盖）
 要求：**≤3 分钟**、**英文**、**公开**（YouTube 等）、链接填进表单
