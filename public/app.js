@@ -1,5 +1,5 @@
 /**
- * Next Edge · Pi Next 参赛作战台 — client logic
+ * Next Edge - Pi Next War Room - client logic
  * - Topic matcher: weighted scoring engine (local, no upload)
  * - 46-day plan: localStorage persistence, optional server sync after Pi login
  * - Daily check-in: streak logic
@@ -29,7 +29,7 @@
       return s;
     } catch (e) { return JSON.parse(JSON.stringify(defaultState)); }
   }
-  var accessToken = null;   // 服务端 /api/progress 需要 Bearer 才会写盘
+  var accessToken = null;   // /api/progress needs a Bearer token to persist
   function save() {
     localStorage.setItem(KEY, JSON.stringify(state));
     if (state.uid && accessToken) {
