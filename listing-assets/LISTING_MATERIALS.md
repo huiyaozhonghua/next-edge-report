@@ -68,8 +68,7 @@ Features:
 - Daily check-in streak to keep you moving
 - Cross-verified research library: prizes, judging criteria, past winners, expected value, red lines
 
-Built for the Pi ecosystem: Pi sign-in, Pi payments, and PiNet compatible. Browse freely;
-sign in to sync.
+Built for the Pi ecosystem: Pi sign-in and PiNet compatible. Browse freely; sign in to sync.
 ```
 
 ### Why this version is a stronger hackathon entry
