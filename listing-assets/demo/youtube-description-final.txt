@@ -1,0 +1,69 @@
+Next Edge is a war room for Pi Next participants — not just another report.
+
+75% of the $200,000 USDT prize pool is awarded for real user engagement and retention,
+not for writing better code. So we built a tool people come back to, with three return
+hooks: a personalised topic match, a 46-day phased plan, and a daily check-in streak.
+
+▸ Open the app: https://nextedgereportmv0511.pinet.com
+▸ Source code: https://github.com/huiyaozhonghua/next-edge-report
+
+─── What this app does ───
+
+1. TOPIC MATCHER — Answer 5 questions about your stack, your available hours and the
+   assets you already own. A transparent weighted scoring engine ranks five candidate
+   hackathon topics against your answers. Everything is computed locally in your browser,
+   so nothing you answer is ever uploaded.
+
+2. 46-DAY PLAN — Broken into 5 phases, from eligibility checks on day one to final
+   submission. 15 concrete tasks, each with a stated reason and a time estimate. Tick one
+   and progress saves instantly, even before you sign in.
+
+3. DAILY CHECK-IN — A streak counter that gives you a reason to come back tomorrow.
+   This is the retention hook that the Community Engagement Award actually rewards.
+
+4. RESEARCH LIBRARY — Cross-verified findings with confidence ratings. Prize structure,
+   submission rules, hard eligibility gates, expected-value estimates for each path, and
+   the red lines you must not cross.
+
+─── Who it is for ───
+
+Solo developers and small teams entering Pi Next — the people deciding WHAT to build and
+stressing about FINISHING it. This solves a decision problem, not a coding problem.
+
+─── How Pi is part of the experience ───
+
+• Pi Authentication is the only sign-in method. No email, no password, no third-party
+  account. Your Pi identity is your account.
+• Progress syncs to your Pi account after sign-in, so it follows you across devices.
+• The app runs inside PiNet, so it is reachable from any browser — Chrome, Safari or
+  Brave — not only from inside the Pi Browser app.
+• The app is free and accepts no payments. No transactions are performed.
+
+─── Technical notes ───
+
+• Static frontend on Cloudflare Pages + a Pages Function for authenticated sync
+• Progress stored in Cloudflare Workers KV, keyed by your server-verified Pi UID
+• No email addresses or phone numbers collected. Identity data is used only to sign you
+  in and to associate your own progress with your account.
+• Built as an entry for the Pi Next hackathon. Research cross-checked against
+  developers.minepi.com/hackathon and the Mainnet Listing Requirements.
+
+─── Timeline ───
+
+0:00  What this is, and why engagement decides the prize
+0:06  The war room dashboard
+0:12  Why 75% of the prize goes to engagement, not code
+0:18  A tool you come back to, not a report
+0:24  The topic matcher: five questions
+0:30  The scores it produces
+0:36  Everything computed locally, nothing uploaded
+0:43  The 46-day plan
+0:49  Every task says why it matters and how long it takes
+0:55  Daily check-in and streak
+1:01  The cross-verified research library
+1:07  Who this is for
+1:13  Sign in with Pi, and running inside PiNet
+1:21  Your Pi identity is your account
+1:28  Closing
+
+Next Edge — pick the right topic, then finish it. Built for Pi Next, on Pi.

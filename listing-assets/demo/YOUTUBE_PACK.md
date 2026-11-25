@@ -31,6 +31,13 @@ Next Edge: Pick the Right Pi Next Topic, Then Finish It in 46 Days
 
 ## 📝 描述（Description）
 
+> ⚠️ **已修正**：v1 曾把「标签（Tags）」段落误粘进描述框，且时间轴是旧版。
+> **最终版已单独存好** → `listing-assets/demo/youtube-description-final.txt`
+> （3239 字符 / 15 个时间戳 / 首个 0:00 / 严格递增 / 无标签污染）
+>
+> **用法**：打开那个 txt → 全选复制 → 粘贴到 YouTube 描述框。
+> 下面保留的是同一份内容，方便对照。
+
 复制以下全部内容，粘到 YouTube 描述框：
 
 ```
@@ -88,13 +95,20 @@ stressing about FINISHING it. This solves a decision problem, not a coding probl
 ─── Timeline ───
 
 0:00  What this is, and why engagement decides the prize
-0:12  The war room dashboard
-0:25  The topic matcher, and the scores it produces
+0:06  The war room dashboard
+0:12  Why 75% of the prize goes to engagement, not code
+0:18  A tool you come back to, not a report
+0:24  The topic matcher: five questions
+0:30  The scores it produces
+0:36  Everything computed locally, nothing uploaded
 0:43  The 46-day plan
-0:55  Check-in, streak, and the research library
-1:11  Who this is for
-1:21  Sign in with Pi, and running inside PiNet
-1:32  Closing
+0:49  Every task says why it matters and how long it takes
+0:55  Daily check-in and streak
+1:01  The cross-verified research library
+1:07  Who this is for
+1:13  Sign in with Pi, and running inside PiNet
+1:21  Your Pi identity is your account
+1:28  Closing
 
 Next Edge — pick the right topic, then finish it. Built for Pi Next, on Pi.
 ```
@@ -102,6 +116,8 @@ Next Edge — pick the right topic, then finish it. Built for Pi Next, on Pi.
 ---
 
 ## 🏷️ 标签（Tags）
+
+> ⚠️ **标签填进上方的「Tags」输入框，不要粘进描述框**（v1 就是这么翻车的）。
 
 ```
 pi next hackathon,
