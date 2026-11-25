@@ -37,10 +37,32 @@ Next Edge: Pick the Right Pi Next Topic, Then Finish It in 46 Days
 >
 > **用法**：打开那个 txt → 全选复制 → 粘贴到 YouTube 描述框。
 > 下面保留的是同一份内容，方便对照。
+>
+> ⚠️ **v2 修正**：Timeline 已移到描述**最开头**。
+> 原因：YouTube 只扫描描述**前约 500 字符**内的时间戳来生成章节条，
+> v1 把 Timeline 放在末尾（第 2652 字符），结果章节完全不渲染。
 
 复制以下全部内容，粘到 YouTube 描述框：
 
 ```
+─── Timeline ───
+
+0:00  What this is, and why engagement decides the prize
+0:06  The war room dashboard
+0:12  Why 75% of the prize goes to engagement, not code
+0:18  A tool you come back to, not a report
+0:24  The topic matcher: five questions
+0:30  The scores it produces
+0:36  Everything computed locally, nothing uploaded
+0:43  The 46-day plan
+0:49  Every task says why it matters and how long it takes
+0:55  Daily check-in and streak
+1:01  The cross-verified research library
+1:07  Who this is for
+1:13  Sign in with Pi, and running inside PiNet
+1:21  Your Pi identity is your account
+1:28  Closing
+
 Next Edge is a war room for Pi Next participants — not just another report.
 
 75% of the $200,000 USDT prize pool is awarded for real user engagement and retention,
@@ -91,24 +113,6 @@ stressing about FINISHING it. This solves a decision problem, not a coding probl
   in and to associate your own progress with your account.
 • Built as an entry for the Pi Next hackathon. Research cross-checked against
   developers.minepi.com/hackathon and the Mainnet Listing Requirements.
-
-─── Timeline ───
-
-0:00  What this is, and why engagement decides the prize
-0:06  The war room dashboard
-0:12  Why 75% of the prize goes to engagement, not code
-0:18  A tool you come back to, not a report
-0:24  The topic matcher: five questions
-0:30  The scores it produces
-0:36  Everything computed locally, nothing uploaded
-0:43  The 46-day plan
-0:49  Every task says why it matters and how long it takes
-0:55  Daily check-in and streak
-1:01  The cross-verified research library
-1:07  Who this is for
-1:13  Sign in with Pi, and running inside PiNet
-1:21  Your Pi identity is your account
-1:28  Closing
 
 Next Edge — pick the right topic, then finish it. Built for Pi Next, on Pi.
 ```
