@@ -45,69 +45,96 @@
       "id": "V2",
       "type": "video",
       "src": "assets/seg_s2.mp4",
-      "dur": 11.3,
+      "dur": 5.8,
       "layout": "fill",
       "subtitle": true,
-      "vo": "The Pi Next prize pool is two hundred thousand US dollars. But seventy five percent of that money goes to real user engagement and retention, not to better code."
+      "vo": "The Pi Next prize pool is two hundred thousand US dollars."
+    },
+    {
+      "id": "V2B",
+      "type": "video",
+      "src": "assets/seg_s2.mp4",
+      "dur": 6.5,
+      "layout": "fill",
+      "subtitle": true,
+      "vo": "But seventy five percent of that goes to engagement and retention, not code."
+    },
+    {
+      "id": "V2C",
+      "type": "video",
+      "src": "assets/seg_s2.mp4",
+      "dur": 5.7,
+      "layout": "fill",
+      "subtitle": true,
+      "vo": "So Next Edge is a tool you come back to, not a report."
     },
     {
       "id": "V3",
       "type": "video",
       "src": "assets/seg_s3.mp4",
-      "dur": 11.2,
+      "dur": 6.5,
       "layout": "fill",
       "subtitle": true,
-      "vo": "So Next Edge is a tool you come back to, not a report you read once. Start with the topic matcher: five questions about your stack, hours and assets."
+      "vo": "Start with the topic matcher: five questions about your stack and hours."
     },
     {
       "id": "V3B",
       "type": "video",
       "src": "assets/seg_s3b.mp4",
-      "dur": 10.2,
+      "dur": 5.9,
       "layout": "fill",
       "subtitle": true,
-      "vo": "The engine scores five candidate ideas against your answers. Everything is computed locally, so nothing you answer leaves your device."
+      "vo": "The engine scores five candidate ideas against your answers."
+    },
+    {
+      "id": "V3C",
+      "type": "video",
+      "src": "assets/seg_s3b.mp4",
+      "dur": 6.4,
+      "layout": "fill",
+      "subtitle": true,
+      "vo": "Everything is computed locally, so nothing you answer leaves your device."
     },
     {
       "id": "V4",
       "type": "video",
       "src": "assets/seg_s4.mp4",
-      "dur": 10.3,
+      "dur": 6.3,
       "layout": "fill",
       "subtitle": true,
-      "vo": "Then a phased forty six day plan, from eligibility checks to final submission. Every task says why it matters and how long it takes."
+      "vo": "Then a phased forty six day plan, from eligibility to submission."
     },
     {
       "id": "V4B",
       "type": "video",
       "src": "assets/seg_s4b.mp4",
-      "dur": 6.2,
+      "dur": 5.5,
       "layout": "fill",
       "subtitle": true,
-      "vo": "Tick one off and progress saves instantly, even before you sign in."
+      "vo": "Every task says why it matters and how long it takes."
     },
     {
       "id": "V5",
       "type": "video",
       "src": "assets/seg_s5.mp4",
-      "dur": 8.2,
+      "dur": 6.8,
       "layout": "fill",
       "subtitle": true,
-      "vo": "A daily check-in builds a streak. That is the retention hook, the thing that brings people back."
+      "vo": "A daily check-in builds a streak. That is the retention hook."
     },
     {
       "id": "V5B",
       "type": "video",
       "src": "assets/seg_s5b.mp4",
-      "dur": 8.2,
+      "dur": 5.9,
       "layout": "fill",
       "subtitle": true,
-      "vo": "And a research library where every conclusion is cross checked against official sources, each with a confidence rating."
+      "vo": "And a research library where every conclusion is cross checked."
     },
     {
       "id": "C6",
       "type": "card",
-      "dur": 7.5,
+      "dur": 6.1,
       "kicker": "WHO IT IS FOR",
       "title": "A decision problem, not a coding problem",
       "sub": "Solo developers and small teams entering Pi Next",
@@ -130,30 +157,30 @@
       ],
       "fade_in": 0.3,
       "fade_out": 0.3,
-      "vo": "This is for solo developers and small teams deciding what to build, and worried about finishing it."
+      "vo": "This is for solo developers and small teams entering Pi Next."
     },
     {
       "id": "V7",
       "type": "video",
       "src": "assets/seg_s7.mp4",
-      "dur": 10.2,
+      "dur": 7.3,
       "layout": "fill",
       "subtitle": true,
-      "vo": "And Pi is how you sign in. No new account, no email, no password. Your Pi identity is your account."
+      "vo": "Pi is how you sign in. No new account, no email, no password."
     },
     {
       "id": "V7B",
       "type": "video",
       "src": "assets/seg_s7b.mp4",
-      "dur": 6.3,
+      "dur": 7.1,
       "layout": "fill",
       "subtitle": true,
-      "vo": "Sign in once and your progress syncs across devices, inside PiNet."
+      "vo": "Your Pi identity is your account. Sign in and progress syncs."
     },
     {
       "id": "C8",
       "type": "card",
-      "dur": 10.3,
+      "dur": 7.8,
       "kicker": "NEXT EDGE",
       "title": "Pick the right topic. Then finish it.",
       "sub": "Built for Pi Next, on Pi",
@@ -176,7 +203,7 @@
       ],
       "fade_in": 0.3,
       "fade_out": 0.4,
-      "vo": "Next Edge. Pick the right topic, then finish it. Built for Pi Next, on Pi. Thank you."
+      "vo": "Next Edge. Pick the right topic, then finish it. Thank you."
     }
   ]
 }

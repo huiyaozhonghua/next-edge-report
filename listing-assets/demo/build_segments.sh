@@ -44,32 +44,32 @@ mkseg () {
 echo "=== 生成各段视频素材 ==="
 
 # S2 作战台：全景 + 打卡卡
-mkseg seg_s2 11.3 scene_s2_001.png scene_s2_002.png scene_s2_002.png scene_s2_002.png
+mkseg seg_s2 8.0 scene_s2_001.png scene_s2_002.png scene_s2_002.png scene_s2_002.png
 
 # S3 匹配器：表单 + 填完
-mkseg seg_s3 11.2 scene_s3_003.png scene_s3_003.png scene_s3_004.png scene_s3_004.png
+mkseg seg_s3 8.5 scene_s3_003.png scene_s3_003.png scene_s3_004.png scene_s3_004.png
 
 # S3B 结果：结果 + 特写
-mkseg seg_s3b 10.2 scene_s3_005.png scene_s3_006.png scene_s3_006.png scene_s3_006.png
+mkseg seg_s3b 8.0 scene_s3_005.png scene_s3_006.png scene_s3_006.png scene_s3_006.png
 
 # S4 计划：概览 + 勾选 + 阶段3
-mkseg seg_s4 10.3 scene_s4_007.png scene_s4_008.png scene_s4_009.png scene_s4_009.png
+mkseg seg_s4 9.0 scene_s4_007.png scene_s4_008.png scene_s4_009.png scene_s4_009.png
 
 # S5 打卡 + 报告库
-mkseg seg_s5 8.2 scene_s5_010.png scene_s5_011.png scene_s5_012.png scene_s5_012.png
+mkseg seg_s5 8.0 scene_s5_010.png scene_s5_011.png scene_s5_012.png scene_s5_012.png
 
 # S7 Pi 登录段：用作战台最终帧（PiNet 徽章在页脚）
-mkseg seg_s7 10.2 scene_s6_013.png scene_s6_013.png scene_s6_013.png scene_s6_013.png
+mkseg seg_s7 9.5 scene_s6_013.png scene_s6_013.png scene_s6_013.png scene_s6_013.png
 
 # S7B PiNet
-mkseg seg_s7b 6.3 scene_s6_013.png scene_s6_013.png scene_s6_013.png
+mkseg seg_s7b 8.0 scene_s6_013.png scene_s6_013.png scene_s6_013.png
 
 
 # S4B 计划特写（阶段3 留存与社区）
-mkseg seg_s4b 6.2 scene_s4_009.png scene_s4_009.png scene_s4_009.png
+mkseg seg_s4b 6.0 scene_s4_009.png scene_s4_009.png scene_s4_009.png
 
 # S5B 报告库（交叉验证表）
-mkseg seg_s5b 8.2 scene_s5_012.png scene_s5_012.png scene_s5_012.png
+mkseg seg_s5b 9.0 scene_s5_012.png scene_s5_012.png scene_s5_012.png
 
 echo
 echo "=== 素材清单 ==="
