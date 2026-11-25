@@ -23,33 +23,52 @@ https://dash.cloudflare.com/profile/api-tokens
 
 不要选模板，直接 **Create Custom Token**（模板的权限组合不对）。
 
-### 3. 填权限
+### 3. 填权限（照着三个下拉框点）
 
 **Token name**：`next-edge-deploy`
 
-**Permissions** 一条策略（Account 级）：
+**Expiration**：留空 / 不设置自动过期
+**Client IP address filtering**：留空
 
-| 权限类型 | 权限 | 资源 |
+**Permissions** 区域，点 **"Add permissions"**（或表格下方的 + 号）加两行：
+
+**第 1 行** —— 三个下拉框依次选：
+
+| 第1个下拉框 | 第2个下拉框 | 第3个下拉框 |
 |---|---|---|
-| Account | **Pages:Edit** | Account — `38e848a7a5031d103a244d52490c5645` |
-| Account | **Workers KV Storage:Edit** | Account — `38e848a7a5031d103a244d52490c5645` |
-| Account | **Account Settings:Read** | Account — `38e848a7a5031d103a244d52490c5645` |
+| `Account` | `Cloudflare Pages` | `Edit` |
 
-> 在新版界面里，权限下拉框直接选 **Account → Pages → Edit** 这样的组合。
-> `KV` 那行是为了创建命名空间；**如果嫌麻烦可以先不给**（进度同步是锦上添花，
-> 跳过 KV 也能部署成功，App 核心功能在 localStorage）。
+**第 2 行**（可选，为了进度同步）：
 
-**Client IP Address Filtering**：留空
-**Token expiration**：留空（不自动过期）
+| 第1个下拉框 | 第2个下拉框 | 第3个下拉框 |
+|---|---|---|
+| `Account` | `Workers KV Storage` | `Edit` |
 
-### 4. 点 "Continue to summary" → "Create Token"
+> ⚠️ **第 2 行可以不加** —— 进度同步是锦上添花，跳过也能部署成功，
+> App 核心功能（选题匹配/46天计划/打卡）都在 localStorage。
+> 加上更完整，但多一步操作。
+
+**Resources** 列（每一行右侧）：
+
+| 下拉框 | 选什么 |
+|---|---|
+| 资源类型 | `Account` |
+| 账户 | 选你的账户（ID 是 `38e848a7a5031d103a244d52490c5645`） |
+
+> 💡 **注意区分两个 "Account"**：
+> - Permissions 第1列的 `Account` = 权限是账户级
+> - Resources 里的 `Account` = 这个 token 能作用于哪个账户
+>
+> **这里不要选 `Zone`**（Zone 级要指定具体域名，我们没有域名）。
+
+### 4. 点 "Continue to summary" → 核对 → 点 "Create Token"
 
 ### 5. 复制 token
 
-新版 token 是 **`cfut_` 开头的可扫描格式**（例如 `cfut_xxxxxxxxx...`），
-不是老的 40 位 hex 串。
+页面上会显示一串长字符串。**新版是 `cfut_` 开头的可扫描格式**，
+也可能是老的 40 位 hex —— 两种 wrangler 都认。
 
-⚠️ **只显示这一次**。
+⚠️ **只显示这一次**，离开页面就看不到了。
 
 ---
 
