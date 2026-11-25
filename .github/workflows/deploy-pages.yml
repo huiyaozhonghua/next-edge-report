@@ -1,0 +1,74 @@
+name: Deploy to Cloudflare Pages
+
+# 改动推 main → 自动部署到 Cloudflare Pages
+#
+# 需要在仓库 Settings → Secrets and variables → Actions 里配 3 个 Secret：
+#   CLOUDFLARE_API_TOKEN     —— 账户 API token（cfat_ 开头，Pages:Write + Workers KV Storage:Write）
+#   CLOUDFLARE_ACCOUNT_ID    —— 38e848a7a5031d103a244d52490c5645
+#   PI_VALIDATION_KEY        —— 域名归属验证 key（128 字符纯文本，见下）
+#
+# ⚠️ 为什么 PI_VALIDATION_KEY 要作为 Secret：
+#   validation-key.txt 是 Pi 的域名归属证明文件。官方明确要求「不要 log 或 commit 这个 key」，
+#   所以它被 .gitignore 排除，不进 git 仓库。
+#   但 Actions 是从 git checkout 出来的 —— 不注入的话，部署后
+#   https://<site>/validation-key.txt 会 404，Pi 的域名复检就会失败。
+#   所以部署前从 Secret 把它写进 public/。
+#
+# ⚠️ 踩过的坑（别改）：
+#   1. 不要在 if: 表达式里引用 secrets.* —— secret 不存在时求值失败，
+#      会让整个 workflow 解析失败（name 回退成文件路径、workflow_dispatch 报 422）。
+#      本文件因此完全不用 if: 判断 secret 是否存在。
+#   2. CLOUDFLARE_ACCOUNT_ID 用 secret 而非变量 —— vars.* 未定义会导致解析失败。
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Write validation-key.txt
+        # Pi 域名归属验证文件。内容必须与 Pi 下发的 key 精确相等（纯文本、无换行）。
+        env:
+          KEY: ${{ secrets.PI_VALIDATION_KEY }}
+        run: |
+          set -uo pipefail
+          if [ -z "${KEY}" ]; then
+            echo "❌ 未配置 PI_VALIDATION_KEY —— 部署后 Pi 域名复检会失败"
+            exit 1
+          fi
+          printf '%s' "${KEY}" > public/validation-key.txt
+          echo "✅ validation-key.txt 已写入（${#KEY} 字节）"
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name=next-edge-report --branch=main --commit-dirty=true
+
+      - name: Verify deployment
+        run: |
+          set -uo pipefail
+          echo "--- waiting for deployment to propagate ---"
+          sleep 20
+          echo "--- validation-key.txt must be served at root ---"
+          KEY=$(curl -fsS "https://next-edge-report.pages.dev/validation-key.txt" || echo "")
+          if [ -z "$KEY" ]; then
+            echo "❌ validation-key.txt 未部署 —— Pi 域名验证会失败"
+            exit 1
+          fi
+          echo "✅ validation-key.txt 已部署（${#KEY} 字节）"
+          echo "--- homepage ---"
+          curl -fsS -o /dev/null -w "  GET / → %{http_code}\n" "https://next-edge-report.pages.dev/"
+          echo "--- privacy policy ---"
+          curl -fsSL -o /dev/null -w "  GET /privacy.html → %{http_code}\n" "https://next-edge-report.pages.dev/privacy.html"
