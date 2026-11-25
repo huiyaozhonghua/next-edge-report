@@ -66,30 +66,30 @@
   }
 
   var PLAN = [
-    { phase: "阶段 0 · 资格确认（今天，30 分钟）", hint: "0 或 1 的门槛，先做这个", items: [
-      { id: "p0a", t: "在 Developer Web Console 注册 Pi Next", s: "Hackathon 标签页，全员都要注册" },
-      { id: "p0b", t: "确认本人 KYC 状态", s: "未完成立刻启动，这是硬门槛" },
-      { id: "p0c", t: "确认网络选择：Production 主网", s: "官方规定不可更改，只有主网能上架参赛" }
+    { phase: "Stage 0 · Eligibility (today, 30 min)", hint: "The zero-or-one gate — do this first", items: [
+      { id: "p0a", t: "Register for Pi Next in the Developer Web Console", s: "Hackathon tab — every member must register" },
+      { id: "p0b", t: "Confirm your own KYC status", s: "If not done, start now — this is a hard gate" },
+      { id: "p0c", t: "Confirm network: Production Mainnet", s: "Cannot be changed — only Mainnet can list" }
     ]},
-    { phase: "阶段 1 · 选题与资产盘点（本周，2 小时）", hint: "复用优于从零开发", items: [
-      { id: "p1a", t: "跑一遍选题匹配器，锁定头号方向", s: "见「选题匹配」标签页" },
-      { id: "p1b", t: "盘点现有 Docker 镜像 / AI 资产", s: "挑 1–2 个能接 Pi 登录支付的" },
-      { id: "p1c", t: "报名 Midpoint 提交", s: "可选但有官方曝光和反馈，细则走邮件" }
+    { phase: "Stage 1 · Topic & asset inventory (this week, 2h)", hint: "Reuse beats building from zero", items: [
+      { id: "p1a", t: "Run the topic matcher and lock your direction", s: "See the Topic Matcher tab" },
+      { id: "p1b", t: "Inventory your Docker images and AI assets", s: "Pick 1–2 that can take Pi sign-in" },
+      { id: "p1c", t: "Enter the Midpoint submission", s: "Optional — official exposure and feedback" }
     ]},
-    { phase: "阶段 2 · 合规改造（11 月底，4–8 小时）", hint: "不达标直接出局", items: [
-      { id: "p2a", t: "改成 Pi 登录 + Pi 支付", s: "禁止邮箱/第三方登录，禁止法币" },
-      { id: "p2b", t: "去掉外链跳转与多余数据采集", s: "禁止收集邮箱手机号" },
-      { id: "p2c", t: "加隐私政策 + 合规 Logo + PiNet 集成", s: "上架必需，物料已备好" }
+    { phase: "Stage 2 · Compliance (end of November, 4–8h)", hint: "Miss these and you are out", items: [
+      { id: "p2a", t: "Switch to Pi sign-in and Pi payments", s: "No email or third-party login, no fiat" },
+      { id: "p2b", t: "Remove external redirects and excess data collection", s: "No collecting emails or phone numbers" },
+      { id: "p2c", t: "Add privacy policy, compliant logo, PiNet integration", s: "Required for listing — assets are ready" }
     ]},
-    { phase: "阶段 3 · 留存与社区（12 月，持续）", hint: "60% 精力放这里，奖金的 75% 在这", items: [
-      { id: "p3a", t: "设计让用户「回来第二次」的钩子", s: "打卡 / 进度 / 提醒 / 数据沉淀" },
-      { id: "p3b", t: "找有 Pi 用户池的队友组队", s: "社区奖看真实参与、留存、传播；每人须各自注册" },
-      { id: "p3c", t: "录制 ≤3 分钟英文演示视频", s: "必须公开（YouTube 等）；讲清 5 件事：这是什么 / 界面功能 / 目标用户 / 解决什么问题 / Pi 如何参与" }
+    { phase: "Stage 3 · Retention & community (December, ongoing)", hint: "Put 60% of your energy here — 75% of the money is here", items: [
+      { id: "p3a", t: "Design a reason to come back a second time", s: "Check-in / progress / reminders / accumulated data" },
+      { id: "p3b", t: "Find teammates with a Pi user base", s: "Community award weighs real engagement, retention and reach" },
+      { id: "p3c", t: "Record a ≤3 minute English demo video", s: "Must be public (YouTube); cover 5 things" }
     ]},
-    { phase: "阶段 4 · 提交（1 月 5 日前）", hint: "截止北京时间 1/6 15:59，别卡点", items: [
-      { id: "p4a", t: "备齐英文名称/描述/预览图/Logo", s: "上架物料在 listing-assets/" },
-      { id: "p4b", t: "公网 HTTPS 部署 + 域名验证", s: "validation-key.txt 模板已备" },
-      { id: "p4c", t: "由一名队员提交，确认 SoloHost App ID", s: "每队最多 3 个 App；提交后截图存档" }
+    { phase: "Stage 4 · Submit (before January 5)", hint: "Deadline is Jan 6, 15:59 Beijing time", items: [
+      { id: "p4a", t: "Prepare English name, description, previews and logo", s: "Listing assets are in listing-assets/" },
+      { id: "p4b", t: "Deploy to public HTTPS and verify the domain", s: "The validation-key.txt template is ready" },
+      { id: "p4c", t: "One teammate submits; confirm the SoloHost App ID", s: "Up to 3 apps per team; screenshot the receipt" }
     ]}
   ];
 
@@ -121,10 +121,10 @@
     $("ringPct").textContent = pct + "%";
     $("ringArc").setAttribute("stroke-dashoffset", String(314 - 314 * pct / 100));
     $("pBar").style.width = pct + "%";
-    $("pCount").textContent = done + " / " + total + " 项任务完成";
-    var stages = ["还没开始 · 先做资格确认", "资格就绪 · 开始盘点资产", "选题锁定 · 进入合规改造", "合规完成 · 主攻留存与社区", "接近完成 · 准备提交"];
+    $("pCount").textContent = done + " / " + total + " tasks done";
+    var stages = ["Not started · start with eligibility", "Eligible · inventory your assets", "Topic locked · compliance next", "Compliant · focus on retention", "Almost done · prepare to submit"];
     $("pStage").textContent = stages[Math.min(4, Math.floor(pct / 25))];
-    $("pDesc").textContent = pct === 0 ? "完成第一个任务，作战台就正式启动了。" : pct < 50 ? "稳住节奏，社区分发才是钱最多的地方。" : "快到终点了，检查演示视频和英文物料。";
+    $("pDesc").textContent = pct === 0 ? "Tick your first task and the war room starts." : pct < 50 ? "Keep the pace — community distribution pays the most." : "Almost there — check your demo video and English assets.";
     var st = streak();
     $("sStreak").textContent = st; $("streakBig").textContent = st;
     $("sLeft").textContent = daysLeft(); $("cdDays").textContent = daysLeft();
@@ -132,7 +132,7 @@
     $("sMatch").textContent = state.topTopic ? state.topTopic.name : "—";
     var checkedToday = state.checkins.indexOf(todayStr()) >= 0;
     $("checkinBtn").disabled = checkedToday;
-    $("checkinBtn").textContent = checkedToday ? "今日已打卡 ✓" : "今日打卡 ✓";
+    $("checkinBtn").textContent = checkedToday ? "Checked in today ✓" : "Check in today ✓";
     var dots = "", d = new Date();
     var set = {}; state.checkins.forEach(function (x) { set[x] = true; });
     for (var i = 6; i >= 0; i--) {
@@ -149,25 +149,25 @@
   }
 
   var QUESTIONS = [
-    { id: "tech", q: "你的主力技术栈是？", opts: [
-      { v: "fullstack", l: "全栈 / Web 开发" }, { v: "ai", l: "AI / Agent 工程" },
-      { v: "docker", l: "Docker / 运维 / 节点" }, { v: "nocode", l: "低代码 / 不会写代码" }
+    { id: "tech", q: "Your main tech stack?", opts: [
+      { v: "fullstack", l: "Full-stack / Web" }, { v: "ai", l: "AI / Agent engineering" },
+      { v: "docker", l: "Docker / Ops / Node" }, { v: "nocode", l: "Low-code / non-coder" }
     ]},
-    { id: "time", q: "这 46 天能投入多少小时？", opts: [
-      { v: "lt10", l: "10 小时以内" }, { v: "10_40", l: "10–40 小时" },
-      { v: "40_100", l: "40–100 小时" }, { v: "gt100", l: "100 小时以上" }
+    { id: "time", q: "How many hours can you put in over these 46 days?", opts: [
+      { v: "lt10", l: "Under 10 hours" }, { v: "10_40", l: "10–40 hours" },
+      { v: "40_100", l: "40–100 hours" }, { v: "gt100", l: "Over 100 hours" }
     ]},
-    { id: "asset", q: "你手上现成的资产？（可多选）", multi: true, opts: [
-      { v: "docker_img", l: "现成 Docker 镜像" }, { v: "agent", l: "AI Agent / MCP 项目" },
-      { v: "content", l: "内容创作 / 视频能力" }, { v: "node", l: "Pi 节点在跑" },
-      { v: "audience", l: "Pi 生态用户池" }, { v: "none", l: "基本没有" }
+    { id: "asset", q: "What assets do you already have? (multi-select)", multi: true, opts: [
+      { v: "docker_img", l: "Ready-made Docker image" }, { v: "agent", l: "AI Agent / MCP project" },
+      { v: "content", l: "Content / video skills" }, { v: "node", l: "Pi node running" },
+      { v: "audience", l: "Audience in the Pi ecosystem" }, { v: "none", l: "None yet" }
     ]},
-    { id: "goal", q: "你最想要哪个奖？", opts: [
-      { v: "judge", l: "评委奖（拼作品）" }, { v: "community", l: "社区奖（拼运营）" },
-      { v: "learn", l: "先跑通流程学习" }
+    { id: "goal", q: "Which prize are you going for?", opts: [
+      { v: "judge", l: "Judges Pick (build the best app)" }, { v: "community", l: "Community Award (win the users)" },
+      { v: "learn", l: "Learn the flow first" }
     ]},
-    { id: "pi", q: "Pi 生态里有现成受众吗？", opts: [
-      { v: "yes", l: "有，能触达 KYC 用户" }, { v: "no", l: "没有，从零开始" }
+    { id: "pi", q: "Do you already have an audience in Pi?", opts: [
+      { v: "yes", l: "Yes, I can reach KYC users" }, { v: "no", l: "No, starting from zero" }
     ]}
   ];
 
@@ -245,7 +245,7 @@
 
   function runMatch() {
     var missing = QUESTIONS.filter(function (q) { return !state.answers[q.id] || (q.multi && !state.answers[q.id].length); });
-    if (missing.length) { showToast("还有 " + missing.length + " 题没答"); return null; }
+    if (missing.length) { showToast( + missing.length + " questions unanswered"); return null; }
     var ranked = TOPICS.map(function (t) { return { t: t, sc: score(t) }; }).sort(function (a, b) { return b.sc - a.sc; });
     state.topTopic = { name: ranked[0].t.name, score: ranked[0].sc };
     var html = '<div class="result top"><div class="rank">头号推荐 · 最适合你</div><span class="score">' + ranked[0].sc + '<small>/100</small></span>' +
@@ -270,15 +270,15 @@
 
   $("checkinBtn").addEventListener("click", function () {
     var t = todayStr(); if (state.checkins.indexOf(t) < 0) state.checkins.push(t);
-    save(); renderDash(); showToast("打卡成功，连续 " + streak() + " 天");
+    save(); renderDash(); showToast("Checked in. Streak: " + streak() + " days");
   });
-  $("matchBtn").addEventListener("click", function () { if (runMatch()) showToast("匹配完成，结果已保存"); });
+  $("matchBtn").addEventListener("click", function () { if (runMatch()) showToast("Match complete — results saved"); });
   $("resetQ").addEventListener("click", function () { state.answers = {}; state.topTopic = null; save(); renderQuestions(); $("matchResults").innerHTML = ""; renderDash(); });
 
   function onIncomplete(payment) { console.warn("[Pi] incomplete payment", payment && payment.identifier); }
   if (typeof window.Pi === "undefined") {
-    $("loginBtn").textContent = "在 Pi Browser 中登录";
-    $("saveTip").textContent = "进度保存在本机浏览器";
+    $("loginBtn").textContent = "Sign in via Pi Browser";
+    $("saveTip").textContent = "Progress saved in this browser";
   } else {
     window.Pi.init({ version: "2.0", sandbox: false });
     $("loginBtn").addEventListener("click", function () {
@@ -289,7 +289,7 @@
         accessToken = auth.accessToken || null;
         $("uid").textContent = u.username ? "@" + u.username : "";
         $("loginBtn").style.display = "none"; $("logoutBtn").style.display = "inline-block";
-        $("saveTip").textContent = "已登录 · 进度云同步";
+        $("saveTip").textContent = "Signed in · Progress synced";
         save();
         fetch("/api/progress", { method: "GET", headers: { "Authorization": "Bearer " + auth.accessToken } })
           .then(function (r) { return r.json(); }).then(function (d) {
@@ -300,7 +300,7 @@
     $("logoutBtn").addEventListener("click", function () {
       state.uid = null; accessToken = null; save();
       $("uid").textContent = ""; $("logoutBtn").style.display = "none"; $("loginBtn").style.display = "inline-block";
-      $("saveTip").textContent = "进度保存在本机浏览器";
+      $("saveTip").textContent = "Progress saved in this browser";
     });
   }
 
