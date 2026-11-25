@@ -101,12 +101,32 @@ VERIFY_RC=${PIPESTATUS[0]}
 # ---------- 5. Pi 侧：验证归属 ----------
 echo "▸ 5/6 Pi 侧：验证域名归属"
 cd "$MCP_DIR" || exit 1
-node mcpcli.mjs call verify_app_url_ownership "{\"app_id\":\"$APP_ID\"}" 2>&1 | head -25 | sed 's/^/  /'
+VERIFY_OUT=$(node mcpcli.mjs call verify_app_url_ownership "{\"app_id\":\"$APP_ID\"}" 2>&1)
+echo "$VERIFY_OUT" | head -25 | sed 's/^/  /'
+if echo "$VERIFY_OUT" | grep -qE '"pi_url"|"pinet_subdomain"'; then
+  echo "  ✅ 归属验证通过 —— 已分配 PiNet 子域名"
+  PI_URL=$(echo "$VERIFY_OUT" | python -c "
+import sys,json
+try:
+    d=json.load(sys.stdin)
+    app=d.get('app') or d
+    print(app.get('pi_url') or app.get('pinet_subdomain') or '')
+except Exception: print('')" 2>/dev/null)
+  [ -n "$PI_URL" ] && echo "     pi_url: $PI_URL"
+else
+  echo "  ⚠️ 未拿到 pi_url —— 看上面的输出定位原因"
+fi
 
 # ---------- 6. Pi 侧：隐私政策 ----------
 echo "▸ 6/6 Pi 侧：设置隐私政策 URL"
-node mcpcli.mjs call update_app "{\"app_id\":\"$APP_ID\",\"privacy_policy_url\":\"$URL/privacy.html\"}" 2>&1 \
-  | grep -E "privacy_policy_url|listing_eligible|error" | head -5 | sed 's/^/  /'
+POLICY_OUT=$(node mcpcli.mjs call update_app "{\"app_id\":\"$APP_ID\",\"privacy_policy_url\":\"$URL/privacy.html\"}" 2>&1)
+if echo "$POLICY_OUT" | grep -q '"privacy_policy_url": "https://'; then
+  echo "  ✅ privacy_policy_url 已设置"
+  echo "$POLICY_OUT" | grep -oE '"privacy_policy_url": "[^"]*"' | head -1 | sed 's/^/     /'
+else
+  echo "  ⚠️ 未能确认隐私政策 URL —— 手动检查："
+  echo "$POLICY_OUT" | head -12 | sed 's/^/     /'
+fi
 
 # ---------- 清理 ----------
 unset CLOUDFLARE_API_TOKEN
