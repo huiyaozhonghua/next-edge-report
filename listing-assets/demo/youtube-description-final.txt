@@ -1,20 +1,10 @@
-─── Timeline ───
-
 0:00  What this is, and why engagement decides the prize
-0:06  The war room dashboard
-0:12  Why 75% of the prize goes to engagement, not code
-0:18  A tool you come back to, not a report
-0:24  The topic matcher: five questions
-0:30  The scores it produces
-0:36  Everything computed locally, nothing uploaded
+0:12  The war room dashboard
+0:24  The topic matcher and the scores it produces
 0:43  The 46-day plan
-0:49  Every task says why it matters and how long it takes
-0:55  Daily check-in and streak
-1:01  The cross-verified research library
-1:07  Who this is for
-1:13  Sign in with Pi, and running inside PiNet
-1:21  Your Pi identity is your account
-1:28  Closing
+0:55  Check-in, streak, and the research library
+1:07  Who it is for, and signing in with Pi
+1:21  PiNet sync, and closing
 
 Next Edge is a war room for Pi Next participants — not just another report.
 
