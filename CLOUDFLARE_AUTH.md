@@ -27,23 +27,27 @@ https://dash.cloudflare.com/profile/api-tokens
 
 **Token name**：`next-edge-deploy`
 
-**Permissions** 三行：
+**Permissions** 一条策略（Account 级）：
 
 | 权限类型 | 权限 | 资源 |
 |---|---|---|
-| Account | **Pages** | Account — `38e848a7a5031d103a244d52490c5645` |
-| Account | **Workers KV Storage** | Account — `38e848a7a5031d103a244d52490c5645` |
-| Account | **Account Settings** | Account — `38e848a7a5031d103a244d52490c5645` |
+| Account | **Pages:Edit** | Account — `38e848a7a5031d103a244d52490c5645` |
+| Account | **Workers KV Storage:Edit** | Account — `38e848a7a5031d103a244d52490c5645` |
+| Account | **Account Settings:Read** | Account — `38e848a7a5031d103a244d52490c5645` |
+
+> 在新版界面里，权限下拉框直接选 **Account → Pages → Edit** 这样的组合。
+> `KV` 那行是为了创建命名空间；**如果嫌麻烦可以先不给**（进度同步是锦上添花，
+> 跳过 KV 也能部署成功，App 核心功能在 localStorage）。
 
 **Client IP Address Filtering**：留空
-**TTL**：留空（不自动过期）
+**Token expiration**：留空（不自动过期）
 
 ### 4. 点 "Continue to summary" → "Create Token"
 
 ### 5. 复制 token
 
-页面上会显示一串 `xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx`（**API Tokens 格式**，
-不是 `eyJ...` 那种 JWT）。
+新版 token 是 **`cfut_` 开头的可扫描格式**（例如 `cfut_xxxxxxxxx...`），
+不是老的 40 位 hex 串。
 
 ⚠️ **只显示这一次**。
 
@@ -51,31 +55,44 @@ https://dash.cloudflare.com/profile/api-tokens
 
 ## 怎么安全地给我
 
-**不要贴在对话里。** 请在 **PowerShell** 里执行这一行（token 直接进环境变量，不进 history、不落文件）：
+**不要贴在对话里。** 推荐用临时文件（我用完立刻删）：
 
 ```powershell
-$env:CLOUDFLARE_API_TOKEN = "<粘贴你的token>"
+Set-Content -Path "$env:TEMP\cf_token.txt" -Value "<粘贴你的token>" -NoNewline
 ```
 
-但这样只对那个 PowerShell 窗口有效，而我需要在自己的进程里用到它。
+然后**告诉我一声**，我读取 → 验证 → 部署 → **立刻删除该文件**。
 
-### 推荐：写进本地环境变量（持久）
+> 🔒 我不会把这个 token 写进任何项目文件、不会打印到日志、不会提交进 git、
+> 不会出现在最终回复里。
+
+### 备选：持久化到环境变量
 
 ```powershell
 [Environment]::SetEnvironmentVariable("CLOUDFLARE_API_TOKEN", "<你的token>", "User")
 ```
+之后重启 WorkBuddy，我的子进程就能读到。
 
-然后**重启 WorkBuddy**（或告诉我一声，我用一个子进程读取持久化的变量）。
-
-### 或者：临时文件（我用完立刻删）
+### 备选：你自己跑部署
 
 ```powershell
-Set-Content -Path "$env:TEMP\cf_token.txt" -Value "<你的token>" -NoNewline
+$env:CLOUDFLARE_API_TOKEN = "<token>"
+cd "G:\WORKBUDDY\2026-11-20-09-48-20\pi-next-app"
+npx wrangler kv namespace create NEXT_EDGE_PROGRESS
+npx wrangler pages deploy public --project-name=next-edge-report --branch=main
 ```
+把输出贴给我，Pi 侧的操作我接着做。
 
-告诉我一声，我读取 → 用完 → 立刻删除该文件。
+---
 
-> 🔒 我不会把这个 token 写进任何项目文件、不会打印到日志、不会提交进 git。
+## token 有效性自测（你也可以先自己验）
+
+```powershell
+curl.exe "https://api.cloudflare.com/client/v4/user/tokens/verify" --header "Authorization: Bearer <你的token>"
+```
+返回 `"status": "active"` 就是好的。
+
+> 注意：这个 curl 需要走代理，加 `-x http://127.0.0.1:17891`
 
 ---
 
