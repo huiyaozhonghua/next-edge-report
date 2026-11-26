@@ -396,3 +396,18 @@ process_transaction     ⬜      ← 需真实 Pi 支付 + 链上确认
 > `create_wallet: true` 意味着收款钱包已激活 —— 这是支付链路解锁的信号。
 > 剩余唯一的技术项 `process_transaction` 需要在 **Pi Browser 真机**完成一笔真实打赏，
 > 并在 **Pi Blockexplorer Mainnet** 确认入账（官方明确：不能只凭 API 回调宣布成功）。
+
+### ⚠️ 两个端点的口径不一致（别被它卡住）
+
+实测同一时刻，`get_app` 与 `list_apps` 对"域名是否已验证"给出**相反**的结论：
+
+| 端点 | `frontend_url_validated` |
+|---|---|
+| `get_app`（按 app_id 查详情） | `true` ✅ |
+| `list_apps`（列出全部 App） | `false` ❌ |
+
+同时 `list_apps` 里 `checklist` 字段**整个不返回**，而 `get_app` 完整返回 11 项。
+
+**结论**：判断单个 App 的状态**一律用 `get_app`**，不要用 `list_apps` 的字段做判断。
+`list_apps` 只适合"我有哪些 App"这个问题。
+（这也是官方 agents.md 把 `get_app` 放在「查单个 App 详情」位置的原因。）
