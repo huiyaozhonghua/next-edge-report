@@ -21,7 +21,8 @@ PROXY = "http://127.0.0.1:17891"
 PI_MAINNET = "https://api.mainnet.minepi.com"
 
 # ── 本 App 的两个角色地址 ──
-APP_WALLET = "GBRAGPYVPUDVRRW7KOAJPBMNGGIG6GSDHLZ7WRNG4K2GJR2DJTJ754HD"  # 收款方（app wallet）
+APP_WALLET = "GBRAGPYVPUDVRRW7KOAJPBMNGGIG6GSDHLZ7WRNG4K2GJR2DJTJ754HD"  # 收款方（app wallet 的 public_key）
+WALLET_RECORD_ID = "wcavgyioyhdbwrviqezspvv7pifeuarb8gf4dzvqneqobhfx5clhfriwn9fn6i3c"  # 同一条钱包记录的 tpa_wallet_id
 PAYER_WALLET = "GDUOFQWPIXGP2IAYMNHJKF6FWKWFHLN4YPIPAIY3PMB4KDZ2PNDBZUEX"  # 打赏方（你的个人钱包）
 
 opener = urllib.request.build_opener(
@@ -94,7 +95,8 @@ def main():
     only_addr = "--just-addresses" in sys.argv
 
     if only_addr:
-        print("  App wallet (收款方):", APP_WALLET)
+        print("  App wallet public_key (收款方):", APP_WALLET)
+        print("  同一条钱包的 tpa_wallet_id  :", WALLET_RECORD_ID)
         print("  Payer wallet (打赏方):", PAYER_WALLET)
         print()
         print("  Blockexplorer 页面:")
