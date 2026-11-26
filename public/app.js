@@ -276,6 +276,92 @@
   $("resetQ").addEventListener("click", function () { state.answers = {}; state.topTopic = null; save(); renderQuestions(); $("matchResults").innerHTML = ""; renderDash(); });
 
   function onIncomplete(payment) { console.warn("[Pi] incomplete payment", payment && payment.identifier); }
+
+  // ── Pi Payments (user_to_app) — 自愿打赏 ──
+  // 金额档位由服务端下发，浏览器只传 offerKey；真实金额以服务端为准。
+  var payOffers = null;      // [{key, pi, label}]
+  var payConfigured = false; // 服务端是否已配置 API key
+  var payMemo = "";
+
+  function apiPost(path, body) {
+    return fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + accessToken },
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, data: d }; }); });
+  }
+
+  function loadPayConfig() {
+    if (!accessToken) return Promise.resolve();
+    return fetch("/api/payments", { headers: { "Authorization": "Bearer " + accessToken } })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !d.ok) return;
+        payOffers = d.offers || [];
+        payConfigured = !!d.configured;
+        payMemo = d.memo || "";
+        renderSupport();
+      })
+      .catch(function () {});
+  }
+
+  function renderSupport() {
+    var box = $("supportBox");
+    if (!box) return;
+    if (!accessToken) { box.innerHTML = ""; box.style.display = "none"; return; }
+    box.style.display = "block";
+    if (!payOffers || !payOffers.length) { box.innerHTML = ""; return; }
+    var html = '<div class="support-title">Support Next Edge</div>';
+    html += '<div class="support-sub">The app is free for every Pi Next participant. If it helped you, a Pi tip keeps the server and the research library running.</div>';
+    html += '<div class="support-offers">';
+    payOffers.forEach(function (o) {
+      html += '<button class="btn sm support-offer" data-offer="' + o.key + '" data-pi="' + o.pi + '">' + o.label + '</button>';
+    });
+    html += '</div>';
+    html += '<div class="support-note">Voluntary and non-binding — every feature stays free either way.</div>';
+    box.innerHTML = html;
+    box.querySelectorAll(".support-offer").forEach(function (b) {
+      b.addEventListener("click", function () { startPayment(b.getAttribute("data-offer")); });
+    });
+  }
+
+  function startPayment(offerKey) {
+    if (!accessToken) { showToast("Sign in with Pi first"); return; }
+    var offer = (payOffers || []).filter(function (o) { return o.key === offerKey; })[0];
+    if (!offer) return;
+    if (typeof window.Pi === "undefined" || !window.Pi.createPayment) {
+      showToast("Pi Payments needs the Pi Browser app");
+      return;
+    }
+    var pi = window.Pi;
+    pi.createPayment(
+      {
+        amount: offer.pi,
+        memo: payMemo,
+        metadata: { offerKey: offer.key },
+        onReadyForServerApproval: function (payment) {
+          return apiPost("/api/payments/approve", { paymentId: payment.identifier })
+            .then(function (r) {
+              if (!r.data || !r.data.ok) throw new Error(r.data && r.data.error || "approval rejected");
+              return payment;
+            });
+        },
+        onReadyForServerCompletion: function (payment) {
+          return apiPost("/api/payments/complete", { paymentId: payment.identifier })
+            .then(function (r) {
+              if (!r.data || !r.data.ok) throw new Error(r.data && r.data.error || "completion failed");
+              showToast("Thank you — your " + offer.pi + " Pi tip supports the project");
+              loadPayConfig();
+              return payment;
+            });
+        },
+        onCancel: function () { showToast("Payment cancelled"); },
+        onError: function (e) { console.warn("[Pi] payment error", e); showToast("Payment failed"); }
+      },
+      { userToken: accessToken }
+    );
+  }
+
   if (typeof window.Pi === "undefined") {
     $("loginBtn").textContent = "Sign in via Pi Browser";
     $("saveTip").textContent = "Progress saved in this browser";
@@ -283,7 +369,7 @@
     window.Pi.init({ version: "2.0", sandbox: false });
     $("loginBtn").addEventListener("click", function () {
       $("loginBtn").disabled = true;
-      window.Pi.authenticate(["username"], onIncomplete).then(function (auth) {
+      window.Pi.authenticate(["username", "payments"], onIncomplete).then(function (auth) {
         var u = auth.user || {};
         state.uid = u.uid || null;
         accessToken = auth.accessToken || null;
@@ -291,6 +377,7 @@
         $("loginBtn").style.display = "none"; $("logoutBtn").style.display = "inline-block";
         $("saveTip").textContent = "Signed in · Progress synced";
         save();
+        loadPayConfig();
         fetch("/api/progress", { method: "GET", headers: { "Authorization": "Bearer " + auth.accessToken } })
           .then(function (r) { return r.json(); }).then(function (d) {
             if (d && d.state) { state = d.state; save(); renderPlan(); renderDash(); renderQuestions(); }
@@ -301,6 +388,7 @@
       state.uid = null; accessToken = null; save();
       $("uid").textContent = ""; $("logoutBtn").style.display = "none"; $("loginBtn").style.display = "inline-block";
       $("saveTip").textContent = "Progress saved in this browser";
+      renderSupport();
     });
   }
 

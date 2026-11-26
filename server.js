@@ -45,8 +45,11 @@ function proxyUrl() {
   }
 }
 
-/** Perform an HTTPS GET through an HTTP CONNECT tunnel when a proxy is configured. */
-function httpsGetViaProxy(host, path, headers, cb) {
+/**
+ * Perform an HTTPS request (GET or POST) through an HTTP CONNECT tunnel when a proxy is configured.
+ * Returns null when no proxy is set (caller should fall back to a direct request).
+ */
+function httpsReqViaProxy(host, path, headers, method, body, cb) {
   const proxy = proxyUrl();
   if (!proxy) return null;
   const req = http.request({
@@ -55,18 +58,27 @@ function httpsGetViaProxy(host, path, headers, cb) {
   });
   req.on("connect", (res, socket) => {
     if (res.statusCode !== 200) { socket.destroy(); return cb(null); }
-    const tlsReq = https.request({ host, path, method: "GET", headers, socket, agent: false, timeout: 15000 }, (up) => {
+    const payload = body ? Buffer.from(body, "utf8") : null;
+    const h = Object.assign({}, headers);
+    if (payload) h["Content-Length"] = payload.length;
+    const tlsReq = https.request({ host, path, method: method || "GET", headers: h, socket, agent: false, timeout: 15000 }, (up) => {
       let raw = "";
       up.on("data", (c) => (raw += c));
       up.on("end", () => { socket.end(); cb({ statusCode: up.statusCode, body: raw }); });
     });
     tlsReq.on("error", () => { socket.destroy(); cb(null); });
+    if (payload) tlsReq.write(payload);
     tlsReq.end();
   });
   req.on("timeout", () => { req.destroy(); cb(null); });
   req.on("error", () => cb(null));
   req.end();
   return true;
+}
+
+/** Perform an HTTPS GET through an HTTP CONNECT tunnel when a proxy is configured. */
+function httpsGetViaProxy(host, path, headers, cb) {
+  return httpsReqViaProxy(host, path, headers, "GET", null, cb);
 }
 
 function send(res, status, body, type) {
@@ -123,6 +135,12 @@ function readBody(req, cb) {
   req.on("end", () => {
     try { cb(raw ? JSON.parse(raw) : {}); } catch (e) { cb({}); }
   });
+}
+
+/** Extract the bearer token from the Authorization header. */
+function bearerOf(req) {
+  const h = (req.headers && req.headers.authorization) || "";
+  return h.replace(/^Bearer\s+/i, "") || null;
 }
 
 /** Verify a Pi access token via GET /v2/me. cb(payload|null). */
@@ -221,12 +239,147 @@ const handler = (req, res) => {
     return json(res, 200, { ok: true });
   }
 
-  // Payment stubs — filled by prompt_payments after MCP onboarding.
-  if (req.method === "POST" && p === "/api/payments/incomplete") {
-    return json(res, 200, { ok: true, note: "resolution pending MCP onboarding" });
+  // ── Pi Payments (user_to_app) ──
+  // 服务端权威档位：客户端只传 offerKey，金额由服务端决定，浏览器输入不可信。
+  const PAY_OFFERS = {
+    small: { pi: 1, label: "1 Pi" },
+    medium: { pi: 5, label: "5 Pi" },
+    large: { pi: 10, label: "10 Pi" },
+  };
+  const PAY_MEMO = "Support Next Edge - server and research costs";
+
+  function payStorePath(name) {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    return path.join(DATA_DIR, name + ".json");
   }
-  if (req.method === "POST" && p === "/api/payments/complete") {
-    return json(res, 501, { ok: false, error: "payments not yet enabled" });
+  function payStoreRead(name) {
+    try { return JSON.parse(fs.readFileSync(payStorePath(name), "utf8")); } catch (e) { return null; }
+  }
+  function payStoreWrite(name, obj) {
+    try { fs.writeFileSync(payStorePath(name), JSON.stringify(obj), "utf8"); } catch (e) { /* ignore */ }
+  }
+
+  /** 用服务端 API key 调 Pi Platform API（GET/POST）。 */
+  function piApiReq(apiPath, apiKey, method, body, cb) {
+    const headers = {
+      Authorization: "Bearer " + apiKey,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+    const payload = body ? JSON.stringify(body) : null;
+    const viaProxy = httpsReqViaProxy("api.minepi.com", apiPath, headers, method || "GET", payload, (r) => {
+      if (!r) return cb(null);
+      let data = null;
+      try { data = JSON.parse(r.body); } catch (e) { /* 非 JSON */ }
+      return cb({ ok: r.statusCode >= 200 && r.statusCode < 300, status: r.statusCode, data });
+    });
+    if (viaProxy) return;
+    const opts = {
+      hostname: "api.minepi.com", path: apiPath, method: method || "GET",
+      headers: Object.assign({}, headers, payload ? { "Content-Length": Buffer.byteLength(payload) } : {})
+    };
+    const up = https.request(opts, (res) => {
+      let raw = "";
+      res.on("data", (c) => (raw += c));
+      res.on("end", () => {
+        let data = null;
+        try { data = JSON.parse(raw); } catch (e) { /* 非 JSON */ }
+        cb({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data });
+      });
+    });
+    up.on("error", () => cb(null));
+    if (payload) up.write(payload);
+    up.end();
+  }
+
+  if (req.method === "GET" && p === "/api/payments") {
+    return verifyTokenBasic(bearerOf(req), (verified) => {
+      if (!verified) return json(res, 401, { ok: false, error: "invalid token" });
+      const configured = !!process.env.PI_NETWORK_API_KEY;
+      const offers = Object.keys(PAY_OFFERS).map(function (k) {
+        return { key: k, pi: PAY_OFFERS[k].pi, label: PAY_OFFERS[k].label };
+      });
+      const s = payStoreRead("supporter-" + String(verified.uid).replace(/[^a-zA-Z0-9_-]/g, ""));
+      return json(res, 200, {
+        ok: true, configured: configured, offers: offers, memo: PAY_MEMO,
+        supporter: !!(s && s.supporter), walletConfigured: false
+      });
+    });
+  }
+
+  if (req.method === "POST" && (p === "/api/payments/approve" || p === "/api/payments/complete")) {
+    return verifyTokenBasic(bearerOf(req), (verified) => {
+      if (!verified) return json(res, 401, { ok: false, error: "invalid token" });
+      const apiKey = process.env.PI_NETWORK_API_KEY;
+      if (!apiKey) {
+        return json(res, 503, {
+          ok: false, error: "payments not configured",
+          hint: "Set PI_NETWORK_API_KEY in the server environment."
+        });
+      }
+      return readBody(req, (body) => {
+        const paymentId = String((body && body.paymentId) || "").trim();
+        if (!paymentId) return json(res, 400, { ok: false, error: "paymentId required" });
+        const action = p === "/api/payments/complete" ? "complete" : "approve";
+        const payKey = "payment-" + paymentId.replace(/[^a-zA-Z0-9_-]/g, "");
+
+        // 幂等：已完成则直接返回
+        const prior = payStoreRead(payKey);
+        if (prior && prior.stage === "completed") {
+          return json(res, 200, Object.assign({ ok: true, idempotent: true, stage: "completed", paymentId: paymentId }, prior.result || {}));
+        }
+
+        // 拉取权威支付状态
+        piApiReq("/v2/payments/" + encodeURIComponent(paymentId), apiKey, "GET", null, (got) => {
+          if (!got || !got.ok || !got.data) {
+            return json(res, 502, { ok: false, error: "cannot read payment", status: got && got.status });
+          }
+          const pay = got.data;
+          const amount = Number(pay.amount);
+          const direction = pay.direction || (pay.transaction && pay.transaction.direction);
+          if (direction !== "user_to_app") return json(res, 400, { ok: false, error: "wrong direction", direction: direction });
+          const matched = Object.keys(PAY_OFFERS).filter(function (k) { return PAY_OFFERS[k].pi === amount; })[0];
+          if (!matched) return json(res, 400, { ok: false, error: "amount not in server offers", amount: amount });
+          const payerUid = pay.from_user_uid || (pay.transaction && pay.transaction.from_user_uid) || null;
+          if (payerUid && String(payerUid) !== String(verified.uid)) {
+            return json(res, 403, { ok: false, error: "payer mismatch" });
+          }
+
+          const base = {
+            ok: true, paymentId: paymentId, offerKey: matched, pi: amount,
+            label: PAY_OFFERS[matched].label, memo: PAY_MEMO
+          };
+
+          if (action === "approve") {
+            payStoreWrite(payKey, { stage: "approved", uid: verified.uid, offerKey: matched, pi: amount, updated: Date.now() });
+            return json(res, 200, Object.assign({}, base, { stage: "approved" }));
+          }
+
+          // complete：服务端 approve → complete
+          piApiReq("/v2/payments/" + encodeURIComponent(paymentId) + "/approve", apiKey, "POST", {}, (appr) => {
+            if (!appr || (!appr.ok && appr.status !== 409)) {
+              return json(res, 502, { ok: false, error: "approve failed", status: appr && appr.status });
+            }
+            piApiReq("/v2/payments/" + encodeURIComponent(paymentId) + "/complete", apiKey, "POST", {}, (comp) => {
+              if (!comp || (!comp.ok && comp.status !== 409)) {
+                return json(res, 502, { ok: false, error: "complete failed", status: comp && comp.status });
+              }
+              // 发放权益：只在确认完成后，且按 payment id 幂等
+              const supKey = "supporter-" + String(verified.uid).replace(/[^a-zA-Z0-9_-]/g, "");
+              const already = payStoreRead(supKey);
+              if (!already || !already.supporter) {
+                payStoreWrite(supKey, { supporter: true, uid: verified.uid, amount: amount, paymentId: paymentId, updated: Date.now() });
+              }
+              payStoreWrite(payKey, {
+                stage: "completed", uid: verified.uid, offerKey: matched, pi: amount, updated: Date.now(),
+                result: { supporter: true, pi: amount, offerKey: matched }
+              });
+              return json(res, 200, Object.assign({}, base, { stage: "completed", supporter: true }));
+            });
+          });
+        });
+      });
+    });
   }
 
   // Progress sync — local JSON file keyed by Pi UID. Requires a Pi access token

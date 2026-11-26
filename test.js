@@ -44,9 +44,12 @@ function run(name, method, url, bodyObj, check, headers) {
     if (r.statusCode !== 200) throw new Error("status " + r.statusCode);
     const b = r.body.toString();
     if (!b.includes("pi-sdk.js")) throw new Error("SDK script missing");
-    if (!b.includes("参赛作战台")) throw new Error("new product title missing");
-    if (!b.includes("选题匹配")) throw new Error("matcher tab missing");
-    if (!b.includes("今日打卡")) throw new Error("checkin missing");
+    if (!b.includes("Pi Next War Room")) throw new Error("new product title missing");
+    if (!b.includes("Topic Matcher")) throw new Error("matcher tab missing");
+    if (!b.includes("Check in today")) throw new Error("checkin missing");
+    if (!b.includes("supportBox")) throw new Error("support box missing");
+    if (!b.includes("Privacy Policy")) throw new Error("privacy link missing in footer");
+    if (!b.includes("Terms of Service")) throw new Error("terms link missing in footer");
     // Hero countdown must be driven by JS, not a hardcoded stale number.
     if (!b.includes('id="heroDays"')) throw new Error("hero countdown must be dynamic (heroDays)");
     const csp = r.headers["Content-Security-Policy"] || "";
@@ -101,8 +104,14 @@ function run(name, method, url, bodyObj, check, headers) {
     if (r.statusCode !== 400) throw new Error("status " + r.statusCode);
     if (JSON.parse(r.body).verified !== false) throw new Error("should be unverified");
   });
-  await run("POST /api/payments/complete not enabled", "POST", "/api/payments/complete", {}, (r) => {
-    if (r.statusCode !== 501) throw new Error("status " + r.statusCode);
+  await run("POST /api/payments/approve requires auth", "POST", "/api/payments/approve", {}, (r) => {
+    if (r.statusCode !== 401) throw new Error("status " + r.statusCode);
+  });
+  await run("POST /api/payments/complete requires auth", "POST", "/api/payments/complete", {}, (r) => {
+    if (r.statusCode !== 401) throw new Error("status " + r.statusCode);
+  });
+  await run("GET /api/payments requires auth", "GET", "/api/payments", null, (r) => {
+    if (r.statusCode !== 401) throw new Error("status " + r.statusCode);
   });
   await run("POST /api/progress requires auth", "POST", "/api/progress", { state: {} }, (r) => {
     if (r.statusCode !== 401) throw new Error("status " + r.statusCode);
