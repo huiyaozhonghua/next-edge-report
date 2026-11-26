@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pi Next 上架表单 · 照抄表</title>
+<style>
+  :root{
+    --navy:#0d1a33; --navy2:#16264a; --ink:#1a2233; --muted:#5b6478;
+    --line:#e3e7ef; --bg:#f5f6fa; --teal:#0d9488; --gold:#f59e0b; --red:#dc2626;
+    --green:#15803d; --code-bg:#f4f5f9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6;padding:28px 20px 60px}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  /* ── 头部 ── */
+  .head{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+        border-radius:16px;padding:28px 32px;color:#fff;margin-bottom:20px}
+  .head h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+  .head .sub{color:#a8bcdd;font-size:14px;margin-top:6px}
+  .head .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+        border-radius:999px;padding:5px 13px;font-size:12.5px;color:#dce7f7}
+  .chip b{color:#7fe3d4}
+  .chip.warn b{color:#fcd34d}
+
+  /* ── 提示条 ── */
+  .alert{border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:14px;display:flex;gap:12px}
+  .alert .ico{font-size:18px;line-height:1.3}
+  .alert.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
+  .alert.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+  .alert.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+
+  /* ── 区块 ── */
+  .sec{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:18px;overflow:hidden}
+  .sec-h{background:#fafbfd;border-bottom:1px solid var(--line);padding:14px 22px;
+         display:flex;align-items:center;gap:12px}
+  .sec-h .num{background:var(--navy);color:#fff;width:26px;height:26px;border-radius:8px;
+              display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:0 0 auto}
+  .sec-h h2{font-size:16px;font-weight:700}
+  .sec-h .tag{margin-left:auto;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px}
+  .tag.done{background:#dcfce7;color:#166534}
+  .tag.todo{background:#fef3c7;color:#92400e}
+  .tag.auto{background:#e0e7ff;color:#3730a3}
+
+  /* ── 字段 ── */
+  .f{padding:16px 22px;border-bottom:1px solid #f0f2f7}
+  .f:last-child{border-bottom:none}
+  .f-h{display:flex;align-items:baseline;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+  .f-h .lbl{font-size:13.5px;font-weight:700;color:var(--navy)}
+  .f-h .req{font-size:11px;color:var(--red);font-weight:700}
+  .f-h .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .f-h .state{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:5px}
+  .state.ok{background:#dcfce7;color:#166534}
+  .state.todo{background:#fef3c7;color:#92400e}
+
+  .val{background:var(--code-bg);border:1px solid #e0e4ee;border-radius:9px;padding:11px 14px;
+       font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;
+       color:#1e293b;white-space:pre-wrap;word-break:break-word;line-height:1.55}
+  .val.long{font-size:12.5px;max-height:none}
+  .copy{margin-top:8px}
+  .copy button{font:inherit;font-size:12px;font-weight:600;background:var(--navy);color:#fff;
+       border:none;border-radius:7px;padding:6px 13px;cursor:pointer;transition:.15s}
+  .copy button:hover{background:var(--teal)}
+  .copy button.copied{background:var(--green)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:16px 22px}
+  .thumb{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  .thumb img{width:100%;display:block;aspect-ratio:3/4;object-fit:cover;object-position:top center;background:#f7f8fb}
+  .thumb .meta{padding:9px 12px}
+  .thumb .n{font-size:12.5px;font-weight:700;color:var(--navy)}
+  .thumb .u{font-size:10.5px;color:var(--muted);font-family:ui-monospace,monospace;word-break:break-all;margin-top:3px}
+  .thumb .badge{display:inline-block;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;
+                padding:1px 7px;border-radius:4px;margin-left:5px}
+
+  /* ── 表格 ── */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid #f0f2f7;vertical-align:top}
+  th{background:#fafbfd;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  tr:last-child td{border-bottom:none}
+  td.mono{font-family:ui-monospace,monospace;font-size:12px}
+  .yes{color:var(--green);font-weight:700}
+  .no{color:var(--red);font-weight:700}
+
+  ol.steps{margin:0;padding-left:22px;font-size:13.5px}
+  ol.steps li{margin-bottom:6px}
+  ol.steps li b{color:var(--navy)}
+
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:26px;line-height:1.9}
+  @media print{
+    body{background:#fff;padding:0}
+    .sec{break-inside:avoid;border-color:#ccc}
+    .copy{display:none}
+    .head{border-radius:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>Pi Next 上架表单 · 照抄表</h1>
+    <div class="sub">Next Edge Report —— 逐格填写 · 每个值均已实测核验（2026-11-26）</div>
+    <div class="meta">
+      <span class="chip">App ID <b>6b0672d68f5d0b3dd1cbb3d9</b></span>
+      <span class="chip">slug <b>next-edge-report-7m5v</b></span>
+      <span class="chip warn">距截止 <b>41 天</b>（北京时间 2027-01-06 15:59）</span>
+      <span class="chip">listing_eligible <b>true</b></span>
+    </div>
+  </div>
+
+  <div class="alert warn">
+    <div class="ico">⚠️</div>
+    <div>
+      <b>提交前必做</b>：在 Developer Web Console 的 Hackathon 标签页完成 <b>Pi Next 报名</b>，并确认 <b>KYC 已完成</b>。
+      报名时须勾选同意《Pi Next Hackathon 2026 Rules》22 条。报名本身不需要有 App。
+    </div>
+  </div>
+
+  <div class="alert info">
+    <div class="ico">💡</div>
+    <div>
+      <b>好消息</b>：官方原文 <i>"For a Mainnet app, submit its listing for review — <b>it does not have to be approved yet</b>."</i>
+      提交上架审核后即可参赛，<b>不用等审核通过</b>。视频链接在截止前可随时替换。
+    </div>
+  </div>
+
+  <!-- ══════ 区块 1 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">1</div><h2>基本字段</h2><div class="tag auto">已由 MCP 写入</div></div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">App name (English)</span><span class="req">必填</span>
+        <span class="state ok">已设置</span></div>
+      <div class="val">Next Edge Report</div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Subtitle / 副标题</span><span class="req">必填</span>
+        <span class="hint">硬限制 ≤ 30 字符</span><span class="state ok">已设置</span></div>
+      <div class="val">Your Pi Next war room</div>
+      <div class="copy"><button onclick="cp(this,'Your Pi Next war room')">复制</button></div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Category</span><span class="req">必填</span>
+        <span class="state ok">已设置</span></div>
+      <div class="val">Productivity</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">
+        官方 16 个枚举：Art · Career · Commerce · Education · Entertainment · Finance · Games · Health · Lifestyle · Music · NFT · <b>Productivity</b> · Social · Sports · Travel · Utilities
+      </div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Language</span><span class="req">必填</span>
+        <span class="state ok">已设置</span></div>
+      <div class="val">English</div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Description</span><span class="req">必填</span>
+        <span class="hint">1015 / 2000 字符</span><span class="state ok">已生效</span></div>
+      <div class="val long">Next Edge is a war room for Pi Next hackathon participants — not just another report.
+
+Answer 5 questions and the built-in matcher scores the best app ideas for YOUR skills, time, and assets. Then track a 46-day phased checklist and build a daily check-in streak. Progress saves automatically and syncs to your Pi account.
+
+Why it exists: 75% of the $200,000 USDT prize pool rewards real user engagement and retention. So we built a tool people come back to — not a one-time read.
+
+Features:
+- Topic matcher with a transparent weighted scoring engine (computed locally, nothing uploaded)
+- 46-day plan from eligibility to submission, with auto-saved progress
+- Daily check-in streak to keep you moving
+- Cross-verified research library: prizes, judging criteria, past winners, expected value, red lines
+- Original deep-dive: prize structure breakdown, hard entry thresholds, risk grading, and three low-cost topic directions
+
+Built for the Pi ecosystem: Pi sign-in, PiNet compatible. Browse freely; sign in to sync.</div>
+      <div class="copy"><button onclick="cp(this,this.closest('.f').querySelector('.val').innerText)">复制全文</button></div>
+    </div>
+  </div>
+
+  <!-- ══════ 区块 2 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">2</div><h2>URL 与合规</h2><div class="tag auto">已由 MCP 写入</div></div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">PiNet URL（填给用户的主地址）</span>
+        <span class="state ok">已分配</span></div>
+      <div class="val">https://nextedgereportmv0511.pinet.com</div>
+      <div class="copy"><button onclick="cp(this,'https://nextedgereportmv0511.pinet.com')">复制</button></div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">frontend_url（部署地址，已验证）</span>
+        <span class="state ok">validated=true</span></div>
+      <div class="val">https://next-edge-report.pages.dev</div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Privacy policy URL</span><span class="req">必填</span>
+        <span class="state ok">200 已验证</span></div>
+      <div class="val">https://next-edge-report.pages.dev/privacy.html</div>
+      <div class="copy"><button onclick="cp(this,'https://next-edge-report.pages.dev/privacy.html')">复制</button></div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Terms of Service URL</span><span class="req">必填</span>
+        <span class="hint">易漏项</span><span class="state ok">200 已验证</span></div>
+      <div class="val">https://next-edge-report.pages.dev/terms.html</div>
+      <div class="copy"><button onclick="cp(this,'https://next-edge-report.pages.dev/terms.html')">复制</button></div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Logo</span><span class="req">必填</span>
+        <span class="state ok">已上传</span></div>
+      <div class="val" style="font-size:12px">https://developer-assets.minepi.com/store/thirdpartyapp/6b0672d68f5d0b3dd1cbb3d9/remote_app_logo/0a363215d483d995e9191ccfc201df0c.png</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">本地原图：<code>listing-assets/logo-1024.png</code>（1024×1024 PNG）</div>
+    </div>
+  </div>
+
+  <!-- ══════ 区块 3 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">3</div><h2>预览图（5 张，按此顺序上传）</h2>
+      <div class="tag todo">⬜ 需你在 Dashboard 上传</div></div>
+
+    <div class="alert info" style="margin:14px 22px 0">
+      <div class="ico">📌</div>
+      <div>
+        MCP 工具里<b>没有预览图上传接口</b>（只有 logo 的），必须去 Dashboard 手动上传。<br>
+        官方校验：<code>"Add 3 screenshots first."</code> —— <b>至少 3 张</b>，我们有 5 张。<br>
+        本地文件在 <code>listing-assets/screenshots/</code>；下面 URL 可直接粘贴（实测全部 200）。
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="thumb">
+        <img src="https://next-edge-report.pages.dev/previews/05-matcher-result.png" alt="">
+        <div class="meta">
+          <div class="n">1 ★ 封面 <span class="badge">放第一位</span></div>
+          <div class="u">https://next-edge-report.pages.dev/previews/05-matcher-result.png</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">选题匹配结果态：69/67/63 三档差异化评分 + 5 题选项高亮</div>
+        </div>
+      </div>
+      <div class="thumb">
+        <img src="https://next-edge-report.pages.dev/previews/01-dashboard.png" alt="">
+        <div class="meta">
+          <div class="n">2 作战台</div>
+          <div class="u">https://next-edge-report.pages.dev/previews/01-dashboard.png</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">41 days left / $200K / 75% + 进度环 + 打卡卡</div>
+        </div>
+      </div>
+      <div class="thumb">
+        <img src="https://next-edge-report.pages.dev/previews/02-topic-matcher.png" alt="">
+        <div class="meta">
+          <div class="n">3 选题匹配器</div>
+          <div class="u">https://next-edge-report.pages.dev/previews/02-topic-matcher.png</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">5 题表单全貌</div>
+        </div>
+      </div>
+      <div class="thumb">
+        <img src="https://next-edge-report.pages.dev/previews/03-46day-plan.png" alt="">
+        <div class="meta">
+          <div class="n">4 46 天计划</div>
+          <div class="u">https://next-edge-report.pages.dev/previews/03-46day-plan.png</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">5 阶段 15 项任务</div>
+        </div>
+      </div>
+      <div class="thumb">
+        <img src="https://next-edge-report.pages.dev/previews/04-report-library-expanded.png" alt="">
+        <div class="meta">
+          <div class="n">5 调研报告库</div>
+          <div class="u">https://next-edge-report.pages.dev/previews/04-report-library-expanded.png</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">交叉验证表 + 置信度徽章 + 期望值测算 + 红线</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert ok" style="margin:14px 22px">
+      <div class="ico">💡</div>
+      <div><b>封面为什么选第 1 张</b>：官方评审标准第一条是 Pi 实用性与社区价值，
+      而 75% 的奖金看参与度和留存。一张「同一套题目、不同的人得到不同答案」的截图，
+      比任何文字都能说明「这是工具不是报告」。</div>
+    </div>
+  </div>
+
+  <!-- ══════ 区块 4 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">4</div><h2>Demo 视频与团队</h2><div class="tag todo">⬜ 需你确认</div></div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Demo video</span><span class="req">必填</span>
+        <span class="hint">≤3 分钟 · 必须公开</span><span class="state ok">已上线</span></div>
+      <div class="val">https://youtu.be/VWwMu_VHQes</div>
+      <div class="copy"><button onclick="cp(this,'https://youtu.be/VWwMu_VHQes')">复制</button></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:7px">
+        ✅ 96 秒 &nbsp;·&nbsp; ✅ 已公开（isPrivate=false / isUnlisted=false）&nbsp;·&nbsp;
+        ✅ 自定义缩略图已生效 &nbsp;·&nbsp; ✅ 章节条 7 个已渲染 &nbsp;·&nbsp; ✅ 置顶评论已发
+      </div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Team members</span><span class="req">必填</span></div>
+      <div class="val">张君辉（单人参赛）</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:7px">
+        规则 9：每个队员须<b>各自注册</b> Pi Next，一个自然人一个账号。<br>
+        规则 10：团队人数<b>无上限</b>；但每个 App 只由一名队员提交。
+      </div>
+    </div>
+
+    <div class="f">
+      <div class="f-h"><span class="lbl">Demo of a real transaction</span></div>
+      <div class="val" style="font-size:12.5px">不适用 —— App 对参赛者全免费，无任何交易功能。
+Pi 侧 create_wallet / process_transaction 显示「不适用」是正常的。</div>
+    </div>
+  </div>
+
+  <!-- ══════ 区块 5 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">5</div><h2>官方表单校验 · 我们的状态</h2></div>
+    <table>
+      <thead><tr><th style="width:26%">校验码</th><th style="width:38%">官方报错文案</th><th style="width:16%">状态</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">not_deployed</td><td>App not deployed</td><td class="yes">✅ 通过</td><td>Cloudflare Pages 已上线</td></tr>
+        <tr><td class="mono">domain_not_verified</td><td>Domain not verified</td><td class="yes">✅ 通过</td><td>validation-key 已部署且匹配</td></tr>
+        <tr><td class="mono">frontend_url_not_validated</td><td>Deploy the app at a verified public URL first</td><td class="yes">✅ 通过</td><td>frontend_url_validated = true</td></tr>
+        <tr><td class="mono">missing_languages</td><td>Choose a language on this listing page first</td><td class="yes">✅ 通过</td><td>English</td></tr>
+        <tr><td class="mono">missing_description_short</td><td>Save the listing first so it has a subtitle</td><td class="yes">✅ 通过</td><td>Your Pi Next war room</td></tr>
+        <tr><td class="mono">pi_kyc_not_applied</td><td>Apply for Pi KYC in the Pi app first</td><td class="yes">✅ 通过</td><td>你已完成 KYC</td></tr>
+        <tr><td class="mono">moderated</td><td>App is blocked or delisted</td><td class="yes">✅ 通过</td><td>无</td></tr>
+        <tr><td class="mono">listing_not_submitted</td><td>Mainnet listing not submitted for review</td><td class="no">⬜ 待做</td><td><b>去 Dashboard 点提交审核</b></td></tr>
+        <tr><td class="mono">missing_remote_previews</td><td>Add 3 screenshots first</td><td class="no">⬜ 待做</td><td><b>上传 5 张（区块 3）</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════ 区块 6 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">6</div><h2>Mainnet Listing Requirements · 逐条自查</h2></div>
+    <table>
+      <thead><tr><th style="width:32%">官方要求</th><th style="width:12%">状态</th><th>我们的证据</th></tr></thead>
+      <tbody>
+        <tr><td>Fully functional app, professional UI</td><td class="yes">✅</td><td>4 标签页全部可交互，移动端响应式，全英文界面</td></tr>
+        <tr><td>Complete KYC verification</td><td class="yes">✅</td><td>Pi KYC 流程已完成</td></tr>
+        <tr><td>不以 "pi" 开头 / 不滥用商标</td><td class="yes">✅</td><td>next-edge-report / nextedgereportmv0511；配色 teal+indigo+amber ≠ Pi 蓝白；logo 无 π 符号</td></tr>
+        <tr><td>Use Only Pi Authentication</td><td class="yes">✅</td><td>只有 Pi.authenticate(["username"])，无邮箱/第三方登录</td></tr>
+        <tr><td>Pi-Only Transactions</td><td class="yes">✅</td><td>无任何交易（免费 App），不存在非 Pi 交易</td></tr>
+        <tr><td>Avoid Redirection to External Sites</td><td class="yes">✅</td><td>无外链、无跳板</td></tr>
+        <tr><td>Limit Data Collection</td><td class="yes">✅</td><td>只存服务端校验过的 Pi UID + 进度 JSON；不收邮箱/手机号</td></tr>
+        <tr><td>Privacy policy</td><td class="yes">✅</td><td>/privacy.html 已上线（200）</td></tr>
+        <tr><td>PiNet 集成</td><td class="yes">✅</td><td>nextedgereportmv0511.pinet.com 已分配</td></tr>
+        <tr><td>英文名称 + 英文描述 + 预览图</td><td class="yes">✅</td><td>全英文；5 张预览图备好</td></tr>
+        <tr><td>Demo 视频 ≤3 分钟且公开</td><td class="yes">✅</td><td>96 秒，已公开</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════ 区块 7 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">7</div><h2>提交操作清单</h2></div>
+    <div style="padding:16px 22px">
+      <ol class="steps">
+        <li>打开 <b>Developer Web Console → Hackathon 标签页</b>，确认已报名 Pi Next（所有队员各自注册）</li>
+        <li>确认 <b>KYC 已完成</b>（Pi KYC 应用）</li>
+        <li>进 <b>应用 → Listing</b> 页，填区块 1–2 的字段（大部分已预填，确认即可）</li>
+        <li>上传 <b>5 张预览图</b>（区块 3，封面用第 1 张）</li>
+        <li>填 <b>Demo video</b> = <code>https://youtu.be/VWwMu_VHQes</code></li>
+        <li>填 <b>Team members</b>（单人参赛填你自己）</li>
+        <li><b>提交上架审核</b> —— 官方明确<b>不必等审核通过</b>即可参赛</li>
+        <li>提交 <b>Pi Next 参赛登记</b>：在同一页面把本 App 登记进 "Your Pi Next apps"
+            <br><span style="color:var(--muted)">（官方：*"Registering alone doesn't enter your app."* 报名 ≠ 参赛）</span></li>
+      </ol>
+    </div>
+    <div style="padding:0 22px 16px">
+      <div class="alert warn" style="margin:0">
+        <div class="ico">⏰</div>
+        <div>
+          <b>时间线</b>：官方截止 <b>2027-01-05 23:59 PST = 北京时间 2027-01-06 15:59</b>，还有 <b>41 天</b>。<br>
+          但别拖到最后 —— <b>ecosystem_listed</b> 目前还是 false，Pi 目录里搜不到你的 App。
+          官方文档要求「listed in the Ecosystem App」才能注册 PiNet URL，所以<b>越早提交审核越好</b>。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ 区块 8 ══════ -->
+  <div class="sec">
+    <div class="sec-h"><div class="num">8</div><h2>速查链接</h2></div>
+    <table>
+      <tbody>
+        <tr><td style="width:34%"><b>上架表单</b></td><td class="mono">https://developers.minepi.com/devconsole/my-apps/6b0672d68f5d0b3dd1cbb3d9/listing</td></tr>
+        <tr><td><b>应用总览</b></td><td class="mono">https://developers.minepi.com/devconsole/my-apps/6b0672d68f5d0b3dd1cbb3d9</td></tr>
+        <tr><td><b>PiNet URL（给用户）</b></td><td class="mono">https://nextedgereportmv0511.pinet.com</td></tr>
+        <tr><td><b>源站</b></td><td class="mono">https://next-edge-report.pages.dev</td></tr>
+        <tr><td><b>GitHub</b></td><td class="mono">https://github.com/huiyaozhonghua/next-edge-report</td></tr>
+        <tr><td><b>Demo 视频</b></td><td class="mono">https://youtu.be/VWwMu_VHQes</td></tr>
+        <tr><td><b>隐私政策 / 服务条款</b></td><td class="mono">/privacy.html &nbsp;/&nbsp; /terms.html</td></tr>
+        <tr><td><b>本地物料目录</b></td><td class="mono">listing-assets/</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="foot">
+    核验基准 2026-11-26 · 官方来源：developers.minepi.com/hackathon、Mainnet Listing Requirements、Developer Portal JS bundle<br>
+    所有字段均经 MCP get_app 实测 + 公网 URL 实测（200）
+  </div>
+
+</div>
+
+<script>
+function cp(btn, text){
+  const done = () => { const o = btn.innerText; btn.innerText = '✓ 已复制'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.innerText = o; btn.classList.remove('copied'); }, 1600); };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallback(text, done));
+  } else fallback(text, done);
+}
+function fallback(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch(e){}
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>
