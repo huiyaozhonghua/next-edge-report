@@ -52,6 +52,28 @@ Cloudflare Pages Functions **按文件路径路由** —— `functions/api/payme
 
 ---
 
+## 📍 关键地址（已记录）
+
+| 角色 | 地址 | 说明 |
+|---|---|---|
+| **App wallet（收款方）** | `GBRAGPYVPUDVRRW7KOAJPBMNGGIG6GSDHLZ7WRNG4K2GJR2DJTJ754HD` | user_to_app 的入账地址 |
+| **个人钱包（打赏方）** | `GDUOFQWPIXGP2IAYMNHJKF6FWKWFHLN4YPIPAIY3PMB4KDZ2PNDBZUEX` | 你用来付款的钱包 |
+
+**链上状态（2026-11-26 实测）**：两个地址在主网都还**查无账户**
+（`api.mainnet.minepi.com/v2/accounts/...` → 404），即**还没有任何交易落到它们上面**。
+
+这说明 wallet **尚未在链上激活**（Pi 的 Mainnet 钱包申请需要审核，审核通过后才部署）。
+所以现在还不能测支付 —— 测了也不会成功。
+
+**一键验证脚本**（支付跑通后跑）：
+```bash
+python listing-assets/verify_payment.py <payment_id> --payer
+```
+它会同时查：payment id 的链上状态、app wallet 的 U2A 入账、你的钱包出账，
+并打印官方指定的 Blockexplorer 页面链接。
+
+---
+
 ## ⬜ 你需要做的三步
 
 ### 1️⃣ 申请 App Wallet（Pi 审核）
